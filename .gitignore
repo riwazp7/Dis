@@ -1,0 +1,4 @@
+.idea/*
+bin/*
+lib/httpcomponents-client-4.5.3/
+lib/httpcomponents-core-4.4.8/
