@@ -1,6 +1,6 @@
 package vpn.impl;
 
-import com.amazonaws.services.ec2.AmazonEC2;
+import aws.AwsManager;
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.Instance;
@@ -16,10 +16,14 @@ import java.util.Set;
 
 public class StaticInstanceFactory implements InstanceFactory {
 
-    private AmazonEC2 ec2;
+    private AwsManager awsManager;
 
-    public StaticInstanceFactory(AmazonEC2 ec2) {
-        this.ec2 = ec2;
+    private static List<String> readStaticInstancesFromFile() {
+        return null;
+    }
+
+    public StaticInstanceFactory(AwsManager awsManager) {
+        this.awsManager = awsManager;
     }
 
     @Override
@@ -52,7 +56,7 @@ public class StaticInstanceFactory implements InstanceFactory {
 
     private List<String> getStoppedInstances() {
         List<String> stoppedInstances = new ArrayList<>();
-        DescribeInstancesResult res = ec2.describeInstances(new DescribeInstancesRequest());
+        DescribeInstancesResult res = awsManager.getEC2().describeInstances(new DescribeInstancesRequest());
         for (Reservation reservation : res.getReservations()) {
             for (Instance instance : reservation.getInstances()) {
                 if ((instance.getState().getCode() & 0xffff) == 16) {

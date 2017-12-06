@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+package grpc_java.radio;
+
+service Terminator {
+    rpc Terminate(TerminateRequest) returns (TerminateResponse) {}
+}
+
+message TerminateRequest {
+
+}
+
+message TerminateResponse {
+
+}

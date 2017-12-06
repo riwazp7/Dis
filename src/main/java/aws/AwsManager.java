@@ -17,7 +17,7 @@ public class AwsManager {
 
     private static AwsManager awsManagerInstance = null;
 
-    static AwsManager getAwsManager() {
+    public static AwsManager getAwsManager() {
             return (awsManagerInstance == null) ? (awsManagerInstance = new AwsManager()) : awsManagerInstance;
     }
 
@@ -27,6 +27,11 @@ public class AwsManager {
 
 
     private AwsManager() {}
+
+    public AmazonEC2 getEC2() {
+        return ec2;
+    }
+
 
     private void startInstance(String instance) {
         StartInstancesRequest request = new StartInstancesRequest().withInstanceIds(instance);
