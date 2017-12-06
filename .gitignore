@@ -1,3 +1,4 @@
 .idea/*
 Distributed.iml
 target/*
+src/main/java/generated/*
