@@ -8,22 +8,21 @@ import com.amazonaws.services.ec2.model.Reservation;
 import vpn.api.InstanceFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 
 public class StaticInstanceFactory implements InstanceFactory {
 
+    private List<String> staticInstanceList;
     private AwsManager awsManager;
-
-    private static List<String> readStaticInstancesFromFile() {
-        return null;
-    }
 
     public StaticInstanceFactory(AwsManager awsManager) {
         this.awsManager = awsManager;
+        this.staticInstanceList = getAllInstances(awsManager);
     }
 
     @Override
@@ -43,27 +42,27 @@ public class StaticInstanceFactory implements InstanceFactory {
 
     @Override
     public List<String> getInstances(int num, Set<String> filter) {
+        Collections.shuffle(staticInstanceList);
         List<String> result = new ArrayList<>();
-        Iterator<String> stoppedInstances = getStoppedInstances().iterator();
-        while(stoppedInstances.hasNext() && num > 0) {
-            String instanceId = stoppedInstances.next();
-            if (!filter.contains(instanceId)) {
-                result.add(instanceId);
+        for (String id : staticInstanceList) {
+            if (result.size() >= num) {
+                break;
+            }
+            if (!filter.contains(id)) {
+                result.add(id);
             }
         }
         return result;
     }
 
-    private List<String> getStoppedInstances() {
-        List<String> stoppedInstances = new ArrayList<>();
+    private static List<String> getAllInstances(AwsManager awsManager) {
+        List<String> instances = new LinkedList<>();
         DescribeInstancesResult res = awsManager.getEC2().describeInstances(new DescribeInstancesRequest());
         for (Reservation reservation : res.getReservations()) {
             for (Instance instance : reservation.getInstances()) {
-                if ((instance.getState().getCode() & 0xffff) == 16) {
-                    stoppedInstances.add(instance.getInstanceId());
-                }
+                instances.add(instance.getInstanceId());
             }
         }
-        return stoppedInstances;
+        return instances;
     }
 }
