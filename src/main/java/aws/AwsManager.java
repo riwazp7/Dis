@@ -3,10 +3,15 @@ package aws;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
+import com.amazonaws.services.ec2.model.DescribeInstancesResult;
+import com.amazonaws.services.ec2.model.Instance;
+import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.StartInstancesRequest;
 import com.amazonaws.services.ec2.model.StopInstancesRequest;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AwsManager {
 
@@ -44,6 +49,25 @@ public class AwsManager {
                 .getReservations().get(0).getInstances().get(0)
                 .getPublicIpAddress();
     }
+
+    public List<Instance> getInstanceDescription(List<String> instanceId) {
+        List<Instance> instances = new ArrayList<>();
+        DescribeInstancesResult result = ec2.describeInstances(
+                new DescribeInstancesRequest().withInstanceIds(instanceId));
+        for (Reservation reservation : result.getReservations()) {
+            instances.addAll(reservation.getInstances());
+        }
+        return instances;
+    }
+
+    public List<Instance> getAllInstanceDescription() {
+        List<Instance> instances = new ArrayList<>();
+        for (Reservation reservation : ec2.describeInstances(new DescribeInstancesRequest()).getReservations()) {
+            instances.addAll(reservation.getInstances());
+        }
+        return instances;
+    }
+
 
     public static void main(String[] args) throws Exception {
         String instance1 = "i-000e784fdc234bf7d";

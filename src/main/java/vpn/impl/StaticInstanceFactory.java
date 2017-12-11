@@ -1,68 +1,110 @@
 package vpn.impl;
 
 import aws.AwsManager;
-import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
-import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.Instance;
-import com.amazonaws.services.ec2.model.Reservation;
+import jdk.internal.jline.internal.Nullable;
 import vpn.api.InstanceFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-
+import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class StaticInstanceFactory implements InstanceFactory {
 
-    private List<String> staticInstanceList;
+    private static final int DEFAULT_NUM_MACHINE = 3;
+    private static final int DEFAULT_MIN_LIFESPAN_SECS = 30;
+    private static final int DEFAULT_LIFESPAN_VARIANCE_SECS = 70;
+
+    private final Random random = new Random();
+    private final Object instancesAccessLock = new Object();
+    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+
+    private List<String> wakingInstances;
+    private List<LocalInstance> aliveInstances;
+    private List<String> sleepingInstances;
+
     private AwsManager awsManager;
 
-    public StaticInstanceFactory(AwsManager awsManager) {
+    public StaticInstanceFactory(AwsManager awsManager) throws RuntimeException {
         this.awsManager = awsManager;
-        this.staticInstanceList = getAllInstances(awsManager);
+        this.sleepingInstances = getAllInstances();
+        init();
+    }
+
+    private void init() {
+        if (sleepingInstances.size() <= DEFAULT_NUM_MACHINE) {
+            throw new RuntimeException("Not enough instances");
+        }
+        Collections.shuffle(sleepingInstances);
+        for (int i = 0; i < DEFAULT_NUM_MACHINE; i++) {
+            String instanceId = sleepingInstances.remove(sleepingInstances.size());
+            wakeUp(instanceId);
+            wakingInstances.add(instanceId);
+        }
+        awaitWakingInstances();
+    }
+
+    // Also check other statuses?
+    private void awaitWakingInstances() {
+        while (wakingInstances.size() > 0) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                // do nth
+            }
+            List<Instance> instances = awsManager.getInstanceDescription(wakingInstances);
+            for (Instance instance : instances) {
+                if ((instance.getState().getCode() & 0xff) == 16) {
+                    wakingInstances.remove(instance.getInstanceId());
+                    LocalInstance localInstance
+                            = new LocalInstance(instance.getInstanceId(), instance.getPublicIpAddress(), 0);
+                    aliveInstances.add(localInstance);
+                }
+            }
+        }
+    }
+
+    private void wakeUp(String instanceId) {
+        awsManager.startInstance(instanceId);
+        // Needed setUp?
+    }
+
+    private void wakeUpInstance(String instanceId) {
+
+    }
+
+    public List<LocalInstance> getAliveInstances() {
+        synchronized (instancesAccessLock) {
+            return Collections.unmodifiableList(aliveInstances);
+        }
     }
 
     @Override
-    public String getInstance() {
-        return getInstance(new HashSet<>());
+    @Nullable
+    public LocalInstance getRandomAliveInstance() {
+        // Check instance is alive (radio)
+        // Check time
+        synchronized (instancesAccessLock) {
+            return aliveInstances.get(random.nextInt(aliveInstances.size()));
+        }
     }
 
-    @Override
-    public String getInstance(Set<String> filter) {
-        return getInstances(1, filter).get(0);
-    }
-
-    @Override
-    public List<String> getInstances(int num) {
-        return getInstances(num, new HashSet<>());
-    }
-
-    @Override
-    public List<String> getInstances(int num, Set<String> filter) {
-        Collections.shuffle(staticInstanceList);
+    private List<String> getAllInstances() {
         List<String> result = new ArrayList<>();
-        for (String id : staticInstanceList) {
-            if (result.size() >= num) {
-                break;
-            }
-            if (!filter.contains(id)) {
-                result.add(id);
-            }
+        for (Instance instance : awsManager.getAllInstanceDescription()) {
+            result.add(instance.getInstanceId());
         }
         return result;
     }
 
-    private static List<String> getAllInstances(AwsManager awsManager) {
-        List<String> instances = new LinkedList<>();
-        DescribeInstancesResult res = awsManager.getEC2().describeInstances(new DescribeInstancesRequest());
-        for (Reservation reservation : res.getReservations()) {
-            for (Instance instance : reservation.getInstances()) {
-                instances.add(instance.getInstanceId());
+    public void killAllInstances() {
+        synchronized (instancesAccessLock) {
+            for (LocalInstance instance : aliveInstances) {
+                awsManager.stopInstance(instance.getInstanceId());
             }
         }
-        return instances;
     }
 }

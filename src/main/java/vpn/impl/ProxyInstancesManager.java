@@ -4,52 +4,33 @@ import aws.AwsManager;
 import vpn.api.InstanceFactory;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 // **Not thread safe right now
-public class ProxyManager {
-
-    private static final int DEFAULT_NUM_MACHINE = 3;
-    private static final int DEFAULT_MIN_LIFESPAN_SECS = 30;
-    private static final int DEFAULT_LIFESPAN_VARIANCE_SECS = 70;
-
-    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-    private final ConcurrentHashMap<String, String> instances = new ConcurrentHashMap<>();
+public class ProxyInstancesManager {
 
     private AwsManager awsManager;
     private InstanceFactory instanceFactory;
     private Random random;
 
-    public ProxyManager() {
+    public ProxyInstancesManager() {
         this.awsManager = AwsManager.getAwsManager();
-        this.instanceFactory = new StaticInstanceFactory(awsManager);
         this.random = new Random();
     }
 
     public void start() throws Exception {
-        System.out.println("START******");
-        List<String> ins = instanceFactory.getInstances(DEFAULT_NUM_MACHINE);
-        System.out.println(ins);
-        for (String instanceId : ins) {
-            addAndStartInstance(instanceId);
-        }
+        this.instanceFactory = new StaticInstanceFactory(awsManager);
     }
 
     public void stop() throws Exception {
-        for (String instanceId : instances.keySet()) {
-            awsManager.stopInstance(instanceId);
-        }
+       instanceFactory.killAllInstances();
     }
 
     private void killAndReplace(String instanceId) {
         awsManager.stopInstance(instanceId);
         System.out.println("Removed instance: " + instanceId);
-        String newInstanceId = instanceFactory.getInstance(new HashSet<>(instances.keySet()));
+        String newInstanceId = instanceFactory.getInstance(new HashSet<>(instances));
         instances.remove(instanceId); // request before removing.
         System.out.println("Starting instance: " + newInstanceId);
         addAndStartInstance(newInstanceId);
@@ -65,7 +46,7 @@ public class ProxyManager {
     }
 
     public static void main(String[] args) throws Exception {
-        ProxyManager manager = new ProxyManager();
+        ProxyInstancesManager manager = new ProxyInstancesManager();
         try {
             manager.start();
             Thread.sleep(200000);
