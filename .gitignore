@@ -2,3 +2,7 @@
 Distributed.iml
 target/*
 src/main/java/generated/*
+.classpath
+.project
+.settings/
+.vscode

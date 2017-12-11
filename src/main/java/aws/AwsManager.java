@@ -2,14 +2,15 @@ package aws;
 
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
+import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.StartInstancesRequest;
 import com.amazonaws.services.ec2.model.StopInstancesRequest;
 
+import javax.annotation.Nullable;
+
 public class AwsManager {
 
-    private static final String instance1 = "i-000e784fdc234bf7d";
-
-    private static AwsManager awsManagerInstance = null;
+    private static AwsManager awsManagerInstance;
 
     public static AwsManager getAwsManager() {
             return (awsManagerInstance == null) ? (awsManagerInstance = new AwsManager()) : awsManagerInstance;
@@ -23,6 +24,9 @@ public class AwsManager {
         return ec2;
     }
 
+    public String setUpInstance(String instanceId) {
+        return null;
+    }
 
     public void startInstance(String instance) {
         StartInstancesRequest request = new StartInstancesRequest().withInstanceIds(instance);
@@ -34,14 +38,15 @@ public class AwsManager {
         ec2.stopInstances(request);
     }
 
+    @Nullable
     public String getInstanceIP(String instance) {
-        return "";
-//        return ec2.describeInstances(new DescribeInstancesRequest().withInstanceIds(instance))
-//                .getReservations().get(0).getInstances().get(0)
-//                .getPublicIpAddress();
+        return ec2.describeInstances(new DescribeInstancesRequest().withInstanceIds(instance))
+                .getReservations().get(0).getInstances().get(0)
+                .getPublicIpAddress();
     }
 
     public static void main(String[] args) throws Exception {
+        String instance1 = "i-000e784fdc234bf7d";
         AwsManager manager = AwsManager.getAwsManager();
         try {
             manager.startInstance(instance1);
