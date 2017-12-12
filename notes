@@ -1,0 +1,19 @@
+/**
+
+Bugs:
+Random Ip repeats a randomly chosen IP (?) a couple of times in a row.
+
+
+Improvements:
+TimeToKill should be the exact time instance is going to die
+Socks5 over ssh is not secure for firefox for some reason?
+
+Stuff to implement:
+
+Servers to run on the instances.
+Servers need to know other instances that are alive.
+Tunnel set up on local machine.
+Tunnel set up on the servers.
+Updating, Setting up, and running servers on aws instances?
+
+**/
