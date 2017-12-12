@@ -3,6 +3,7 @@ package vpn.impl;
 import aws.AwsManager;
 import com.amazonaws.services.ec2.model.Instance;
 import jdk.internal.jline.internal.Nullable;
+import jdk.vm.ci.meta.Local;
 import vpn.api.InstanceFactory;
 
 import java.util.ArrayList;
@@ -50,11 +51,11 @@ public class StaticInstanceFactory implements InstanceFactory {
             wakeUpInstance(instanceId);
             wakingInstances.add(instanceId);
         }
-        awaitWakingInstances();
+        awaitAllWakingInstances();
     }
 
     // Also check other statuses?
-    private void awaitWakingInstances() {
+    private void awaitAllWakingInstances() {
         while (wakingInstances.size() > 0) {
             try {
                 Thread.sleep(500);
@@ -80,6 +81,43 @@ public class StaticInstanceFactory implements InstanceFactory {
                 }
             }
         }
+    }
+
+    private void awaitSingleWakingInstance() {
+        synchronized (instancesAccessLock) {
+            if (wakingInstances.isEmpty()) {
+                throw new RuntimeException("waking instance list empty");
+            }
+            List<Instance> instances = awsManager.getInstanceDescription(wakingInstances);
+            while (true) { // Bad Idea
+                for (Instance instance : instances) {
+                    if ((instance.getState().getCode() & 0xff) == 16) {
+                        wakingInstances.remove(instance.getInstanceId());
+                        registerTimedLocalInstance(instance);
+                        return;
+                    }
+                }
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    //
+                }
+            }
+        }
+    }
+
+    private void registerTimedLocalInstance(Instance instance) {
+        int lifeSpanSecs = DEFAULT_MIN_LIFESPAN_SECS + random.nextInt(DEFAULT_LIFESPAN_VARIANCE_SECS);
+        int startWakingUpSecs = DEFAULT_START_BUFFER > lifeSpanSecs ?
+                (DEFAULT_START_BUFFER - DEFAULT_MIN_LIFESPAN_SECS) : DEFAULT_START_BUFFER;
+        LocalInstance localInstance
+                = new LocalInstance(instance.getInstanceId(),
+                instance.getPublicIpAddress(),
+                TimeUnit.SECONDS.toMillis(lifeSpanSecs));
+        scheduledExecutorService.schedule(this::wakeUpRandomInstance, startWakingUpSecs, TimeUnit.SECONDS);
+        scheduledExecutorService.schedule(
+                () -> killInstance(localInstance), lifeSpanSecs, TimeUnit.SECONDS);
+        aliveInstances.add(localInstance);
     }
 
     private void wakeUpRandomInstance() {
@@ -122,6 +160,7 @@ public class StaticInstanceFactory implements InstanceFactory {
     }
 
     private void addAndStartInstance(String instanceId) {
+
     }
 
     private List<String> getAllInstances() {
