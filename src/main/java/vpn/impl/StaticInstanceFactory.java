@@ -149,6 +149,9 @@ public class StaticInstanceFactory implements InstanceFactory {
         // Check instance is alive (radio)
         // Check time
         synchronized (instancesAccessLock) {
+            if (aliveInstances.isEmpty()) {
+                throw new RuntimeException("No instances alive");
+            }
             return aliveInstances.get(random.nextInt(aliveInstances.size()));
         }
     }
