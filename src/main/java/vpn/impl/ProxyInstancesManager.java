@@ -3,9 +3,7 @@ package vpn.impl;
 import aws.AwsManager;
 import vpn.api.InstanceFactory;
 
-import java.util.HashSet;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 // **Not thread safe right now
 public class ProxyInstancesManager {

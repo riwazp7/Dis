@@ -2,10 +2,9 @@ package vpn.impl;
 
 import aws.AwsManager;
 import com.amazonaws.services.ec2.model.Instance;
-import jdk.internal.jline.internal.Nullable;
-import jdk.vm.ci.meta.Local;
 import vpn.api.InstanceFactory;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,10 +15,10 @@ import java.util.concurrent.TimeUnit;
 
 public class StaticInstanceFactory implements InstanceFactory {
 
-    private static final int DEFAULT_NUM_MACHINE = 3;
-    private static final int DEFAULT_MIN_LIFESPAN_SECS = 70;
-    private static final int DEFAULT_LIFESPAN_VARIANCE_SECS = 120;
-    private static final int DEFAULT_START_BUFFER = 60;
+    private static final int DEFAULT_NUM_MACHINE = 4;
+    private static final int DEFAULT_MIN_LIFESPAN_SECS = 40;
+    private static final int DEFAULT_LIFESPAN_VARIANCE_SECS = 60;
+    private static final int DEFAULT_START_BUFFER = 30;
 
     private final Random random = new Random();
     private final Object instancesAccessLock = new Object();
@@ -46,8 +45,10 @@ public class StaticInstanceFactory implements InstanceFactory {
             throw new RuntimeException("Not enough instances");
         }
         Collections.shuffle(sleepingInstances);
+        // System.out.println("shuffeled");
         for (int i = 0; i < DEFAULT_NUM_MACHINE; i++) {
-            String instanceId = sleepingInstances.remove(sleepingInstances.size());
+            System.out.println("started 1");
+            String instanceId = sleepingInstances.remove(sleepingInstances.size() - 1);
             wakeUpInstance(instanceId);
             wakingInstances.add(instanceId);
         }
@@ -66,21 +67,11 @@ public class StaticInstanceFactory implements InstanceFactory {
             for (Instance instance : instances) {
                 if ((instance.getState().getCode() & 0xff) == 16) {
                     wakingInstances.remove(instance.getInstanceId());
-
-                    int lifeSpanSecs = DEFAULT_MIN_LIFESPAN_SECS + random.nextInt(DEFAULT_LIFESPAN_VARIANCE_SECS);
-                    int startWakingUpSecs = DEFAULT_START_BUFFER > lifeSpanSecs ?
-                            (DEFAULT_START_BUFFER - DEFAULT_MIN_LIFESPAN_SECS) : DEFAULT_START_BUFFER;
-                    LocalInstance localInstance
-                            = new LocalInstance(instance.getInstanceId(),
-                            instance.getPublicIpAddress(),
-                            TimeUnit.SECONDS.toMillis(lifeSpanSecs));
-                    scheduledExecutorService.schedule(this::wakeUpRandomInstance, startWakingUpSecs, TimeUnit.SECONDS);
-                    scheduledExecutorService.schedule(
-                            () -> killInstance(localInstance), lifeSpanSecs, TimeUnit.SECONDS);
-                    aliveInstances.add(localInstance);
+                    registerTimedLocalInstance(instance);
                 }
             }
         }
+        // System.out.println("All initial instances running");
     }
 
     private void awaitSingleWakingInstance() {
@@ -107,30 +98,33 @@ public class StaticInstanceFactory implements InstanceFactory {
     }
 
     private void registerTimedLocalInstance(Instance instance) {
+        // System.out.println("Registered id: " + instance.getInstanceId());
         int lifeSpanSecs = DEFAULT_MIN_LIFESPAN_SECS + random.nextInt(DEFAULT_LIFESPAN_VARIANCE_SECS);
-        int startWakingUpSecs = DEFAULT_START_BUFFER > lifeSpanSecs ?
-                (DEFAULT_START_BUFFER - DEFAULT_MIN_LIFESPAN_SECS) : DEFAULT_START_BUFFER;
         LocalInstance localInstance
                 = new LocalInstance(instance.getInstanceId(),
                 instance.getPublicIpAddress(),
                 TimeUnit.SECONDS.toMillis(lifeSpanSecs));
-        scheduledExecutorService.schedule(this::wakeUpRandomInstance, startWakingUpSecs, TimeUnit.SECONDS);
+        scheduledExecutorService.schedule(
+                this::wakeUpRandomInstance, lifeSpanSecs - DEFAULT_START_BUFFER, TimeUnit.SECONDS);
         scheduledExecutorService.schedule(
                 () -> killInstance(localInstance), lifeSpanSecs, TimeUnit.SECONDS);
         aliveInstances.add(localInstance);
     }
 
     private void wakeUpRandomInstance() {
+        // System.out.println("Waking up a random instance");
         String instanceId;
         synchronized (instancesAccessLock) {
             Collections.shuffle(sleepingInstances);
-            instanceId = sleepingInstances.remove(sleepingInstances.size());
+            instanceId = sleepingInstances.remove(sleepingInstances.size() - 1);
             wakingInstances.add(instanceId);
         }
         awsManager.startInstance(instanceId);
     }
 
     private void killInstance(LocalInstance localInstance) {
+        // System.out.println("Killing: " + localInstance.getInstanceId());
+        awaitSingleWakingInstance();
         awsManager.stopInstance(localInstance.getInstanceId());
         synchronized (instancesAccessLock) {
             aliveInstances.remove(localInstance);
@@ -159,10 +153,6 @@ public class StaticInstanceFactory implements InstanceFactory {
         }
     }
 
-    private void addAndStartInstance(String instanceId) {
-
-    }
-
     private List<String> getAllInstances() {
         List<String> result = new ArrayList<>();
         for (Instance instance : awsManager.getAllInstanceDescription()) {
@@ -176,6 +166,28 @@ public class StaticInstanceFactory implements InstanceFactory {
             for (LocalInstance instance : aliveInstances) {
                 awsManager.stopInstance(instance.getInstanceId());
             }
+        }
+    }
+
+    public static void main(String[] args) {
+        StaticInstanceFactory factory = null;
+        try {
+            factory = new StaticInstanceFactory(AwsManager.getAwsManager());
+            List<LocalInstance> instances = factory.getAliveInstances();
+//            for (LocalInstance localInstance : instances) {
+//                System.out.println(localInstance.getInstanceId());
+//                System.out.println(localInstance.getIP());
+//                System.out.println(localInstance.getKillTime());
+//            }
+            for (int i = 0; i < 100; i++) {
+                System.out.println("Random Ip: " + factory.getRandomAliveInstance().getIP());
+                Thread.sleep(5000);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (factory != null)
+                factory.killAllInstances();
         }
     }
 }
