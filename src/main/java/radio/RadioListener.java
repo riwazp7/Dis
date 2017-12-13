@@ -40,7 +40,8 @@ public class RadioListener {
 
     public void startServer() throws IOException {
         server.start();
-        Runtime.getRuntime().addShutdownHook(new Thread(RadioListener.this::shutDown)); // remove when shutdown manually?
+        // remove when shutting down manually?
+        Runtime.getRuntime().addShutdownHook(new Thread(RadioListener.this::shutDown));
     }
 
     public void shutDown() {

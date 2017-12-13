@@ -180,12 +180,6 @@ public class StaticInstanceFactory implements InstanceFactory {
         StaticInstanceFactory factory = null;
         try {
             factory = new StaticInstanceFactory(AwsManager.getAwsManager());
-            List<LocalInstance> instances = factory.getAliveInstances();
-//            for (LocalInstance localInstance : instances) {
-//                System.out.println(localInstance.getInstanceId());
-//                System.out.println(localInstance.getIP());
-//                System.out.println(localInstance.getKillTime());
-//            }
             for (int i = 0; i < 100; i++) {
                 System.out.println("Random Ip: " + factory.getRandomAliveInstance().getIP());
                 Thread.sleep(5000);
