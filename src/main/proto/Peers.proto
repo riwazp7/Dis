@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+package generated.grpc.radio;
+
+service Peers {
+    rpc GetPeers(PeerRequest) returns (PeersResponse) {}
+}
+
+message PeerRequest {
+
+}
+
+message PeersResponse {
+    string peers = 1;
+}

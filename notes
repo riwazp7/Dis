@@ -5,6 +5,7 @@ Random Ip repeats a randomly chosen IP (?) a couple of times in a row.
 
 
 Improvements:
+Maybe not kill for some time after instance is supposed to be dead?
 TimeToKill should be the exact time instance is going to die
 Socks5 over ssh is not secure for firefox for some reason?
 

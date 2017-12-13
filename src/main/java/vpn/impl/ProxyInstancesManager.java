@@ -4,8 +4,8 @@ import aws.AwsManager;
 import vpn.api.InstanceFactory;
 
 import java.net.InetSocketAddress;
+import java.util.List;
 
-// **Not thread safe right now
 public class ProxyInstancesManager {
 
     private AwsManager awsManager;
@@ -25,6 +25,10 @@ public class ProxyInstancesManager {
 
     public InetSocketAddress getRandomProxy() {
         return new InetSocketAddress(instanceFactory.getRandomAliveInstance().getIP(), 8888);
+    }
+
+    public List<String> getAliveProxies() {
+        return null;
     }
 
     public static void main(String[] args) throws Exception {

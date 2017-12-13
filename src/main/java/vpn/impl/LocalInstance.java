@@ -20,6 +20,7 @@ public final class LocalInstance {
         return IP;
     }
 
+    // doesn't work as intended
     public long getKillTime() {
         return killTimeLong;
     }

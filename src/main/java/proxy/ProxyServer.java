@@ -22,7 +22,9 @@ public class ProxyServer {
 
         @Override
         public InetSocketAddress resolve(String host, int port) throws UnknownHostException {
-            return proxyInstancesManager.getRandomProxy();
+            System.out.println(host + " " + port);
+            return new InetSocketAddress("127.0.0.1", 8080);
+            //return proxyInstancesManager.getRandomProxy();
         }
     }
 
@@ -38,7 +40,8 @@ public class ProxyServer {
     }
 
     public static void main(String[] args) {
-
+        ProxyServer server = new ProxyServer(null);
+        server.start();
     }
 }
 
