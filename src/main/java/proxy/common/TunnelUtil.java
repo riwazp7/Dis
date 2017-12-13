@@ -1,4 +1,4 @@
-package proxy;
+package proxy.common;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,17 +11,17 @@ public class TunnelUtil {
 
     // To be able to kill a tunnel by destroying its process, this command isn't run in background "-f" ssh option
     private static final String startTunnelCommand = "ssh -N -i %s -D %s %s";
-    private static final String killAllTunnelsCommand = "pkill ssh";
+    private static final String killAllTunnelsCommand = "pkill ssh"; // this will interfere with the host machine...
 
-    public static Process startTunnel(int port, String host, String sshkeyFile) throws IOException, InterruptedException {
+    public static Process startTunnel(int port, String host, String sshkeyFile) throws IOException {
         return executeBashCommand(String.format(startTunnelCommand, sshkeyFile, port, host).split(" "));
     }
 
-    public static Process killAllTunnels() throws IOException, InterruptedException {
-        return executeBashCommand(killAllTunnelsCommand.split(" "));
+    public static void killAllTunnels() throws IOException {
+        executeBashCommand(killAllTunnelsCommand.split(" "));
     }
 
-    private static Process executeBashCommand(String[] commands) throws IOException, InterruptedException {
+    private static Process executeBashCommand(String[] commands) throws IOException {
         return new ProcessBuilder(commands)
                 .inheritIO()
                 .directory(new File(System.getProperty("user.home")))
