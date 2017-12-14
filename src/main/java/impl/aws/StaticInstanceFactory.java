@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * v. questionable thread safety....
  */
-
 public class StaticInstanceFactory implements InstanceFactory {
 
     private static final int DEFAULT_NUM_MACHINE = 4;

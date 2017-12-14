@@ -1,6 +1,7 @@
 .idea/*
 Distributed.iml
 target/*
+bin/*
 src/main/java/generated/*
 .classpath
 .project
