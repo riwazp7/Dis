@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+package generated.grpc.radio;
+
+service Remap {
+    rpc ScheduleReMap(ReMapPath) returns (ScheduleReMapResponse) {}
+    rpc ExecuteReMap(ReMapRequest) returns (ExecuteReMapResponse) {}
+}
+
+message ReMapPath {
+    ReMapRequest reMapRequest = 1;
+    repeated string map = 2;
+}
+
+message ReMapRequest {
+    int32 mapId = 1;
+}
+
+message ScheduleReMapResponse {
+    ReMapRequest reMapRequest = 1;
+    bool ok = 2;
+    string failedPeer = 3;
+}
+
+// Similar to Schedule response for now but will change
+message ExecuteReMapResponse {
+    ReMapRequest reMapRequest = 1;
+    bool ok = 2;
+    string failedPeer = 3;
+}
