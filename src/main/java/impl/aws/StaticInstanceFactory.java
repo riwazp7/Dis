@@ -148,7 +148,7 @@ public class StaticInstanceFactory implements InstanceFactory {
     @Override
     @Nullable
     public LocalInstance getRandomAliveInstance() {
-        // Check instance is alive (impl.radio)
+        // Check instance is alive (impl.proxy.radio)
         // Check time
         synchronized (instancesAccessLock) {
             if (aliveInstances.isEmpty()) {

@@ -1,6 +1,6 @@
 package impl.proxy.remote;
 
-import impl.radio.RadioListener;
+import impl.proxy.radio.RadioListener;
 
 import java.util.Collections;
 import java.util.List;

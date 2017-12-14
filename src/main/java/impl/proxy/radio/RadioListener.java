@@ -1,18 +1,14 @@
-package impl.radio;
+package impl.proxy.radio;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import generated.grpc.radio.PeerRequest;
 import generated.grpc.radio.PeersGrpc;
 import generated.grpc.radio.PeersResponse;
-import generated.grpc.radio.TerminateRequest;
-import generated.grpc.radio.TerminateResponse;
-import generated.grpc.radio.TerminatorGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
-import io.grpc.stub.StreamObserver;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -34,7 +30,7 @@ public class RadioListener {
 
     private RadioListener(ManagedChannel channel, int serverPort) {
         this.channel = channel;
-        this.server = ServerBuilder.forPort(serverPort).addService(new TerminatorService()).build();
+        this.server = ServerBuilder.forPort(serverPort).addService(new Services.TerminatorService()).build();
         this.peersFutureStub = PeersGrpc.newFutureStub(channel);
         this.backgroundExecutor = Executors.newSingleThreadExecutor();
     }
@@ -59,13 +55,5 @@ public class RadioListener {
             }
             return null;
         }, backgroundExecutor);
-    }
-
-    private static class TerminatorService extends TerminatorGrpc.TerminatorImplBase {
-        @Override
-        public void terminate(TerminateRequest request, StreamObserver<TerminateResponse> responseObserver) {
-            responseObserver.onNext(TerminateResponse.newBuilder().build());
-            responseObserver.onCompleted();
-        }
     }
 }

@@ -1,4 +1,4 @@
-package impl.radio;
+package impl.proxy.radio;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import generated.grpc.radio.PeerRequest;
@@ -15,6 +15,8 @@ import io.grpc.stub.StreamObserver;
 import impl.aws.ProxyInstancesManager;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.concurrent.Callable;
 
 public class RadioHq {
 
@@ -33,7 +35,9 @@ public class RadioHq {
         this.proxyInstancesManager = proxyInstancesManager;
         this.server = ServerBuilder
                 .forPort(serverPort)
-                .addService(new PeersService(proxyInstancesManager)).build();
+                .addService(new Services.PeersService(
+                        () -> String.join(" ", proxyInstancesManager.getAliveProxies())))
+                .build();
     }
 
     public void shutDown() {
@@ -49,23 +53,6 @@ public class RadioHq {
     // Is this needed?
     public ListenableFuture<TerminateResponse> sendTerminate() {
         return terminatorStub.terminate(TerminateRequest.newBuilder().build());
-    }
-
-    private static class PeersService extends PeersGrpc.PeersImplBase {
-
-        private final ProxyInstancesManager proxyInstancesManager;
-
-         PeersService(ProxyInstancesManager proxyInstancesManager) {
-            super();
-            this.proxyInstancesManager = proxyInstancesManager;
-        }
-
-        @Override
-        public void getPeers(PeerRequest request, StreamObserver<PeersResponse> responseObserver) {
-            String response = String.join(" ", proxyInstancesManager.getAliveProxies());
-            responseObserver.onNext(PeersResponse.newBuilder().setPeers(response).build());
-            responseObserver.onCompleted();
-        }
     }
 
     public static void main(String[] args) {
