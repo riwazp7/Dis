@@ -6,6 +6,7 @@ import java.io.IOException;
 /**
  * Running ssh -D command from java to set up socks5 over ssh
  * .............until we find a better solution.
+ * jsch isn't what we're looking for.
  */
 public class TunnelUtil {
 

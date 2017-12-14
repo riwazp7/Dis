@@ -1,22 +1,24 @@
 package proxy;
 
-import com.jcraft.jsch.ChannelDirectTCPIP;
-import com.jcraft.jsch.ChannelForwardedTCPIP;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.Session;
+import net.lightbody.bmp.mitm.CertificateInfo;
+import net.lightbody.bmp.mitm.PemFileCertificateSource;
+import net.lightbody.bmp.mitm.RootCertificateGenerator;
+import net.lightbody.bmp.mitm.manager.ImpersonatingMitmManager;
 import org.littleshoot.proxy.HostResolver;
 import org.littleshoot.proxy.HttpProxyServerBootstrap;
+import org.littleshoot.proxy.SslEngineSource;
+import org.littleshoot.proxy.extras.SelfSignedSslEngineSource;
 import org.littleshoot.proxy.impl.DefaultHttpProxyServer;
 import vpn.impl.ProxyInstancesManager;
 
-import java.io.InputStream;
-import java.io.PipedInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.net.UnknownHostException;
+import java.util.concurrent.Executors;
 
 public class ProxyServer {
 
@@ -33,7 +35,8 @@ public class ProxyServer {
         @Override
         public InetSocketAddress resolve(String host, int port) throws UnknownHostException {
             System.out.println(host + " " + port);
-            return new InetSocketAddress("127.0.0.1", 8080);
+            return new InetSocketAddress(InetAddress.getByName(host), port);
+            //return new InetSocketAddress("127.0.0.1", 443);
             //return proxyInstancesManager.getRandomProxy();
         }
     }
@@ -42,6 +45,9 @@ public class ProxyServer {
 
     public ProxyServer(ProxyInstancesManager proxyInstancesManager) {
         this.defaultHttpProxyServer = DefaultHttpProxyServer.bootstrap().withPort(PORT)
+                .withAllowRequestToOriginServer(true)
+                .withAuthenticateSslClients(true)
+                //.withSslEngineSource(new SelfSignedSslEngineSource())
                 .withServerResolver(new Resolver(proxyInstancesManager));
     }
 
@@ -50,45 +56,19 @@ public class ProxyServer {
     }
 
     public static void main(String[] args) throws Exception {
-        JSch jSch = new JSch();
-        jSch.addIdentity("/Users/Riwaz/keys/ohiokey.pem");
-        Session session = jSch.getSession("ubuntu","18.221.127.190", 22);
-        session.setConfig("StrictHostKeyChecking", "no");
-        session.setPortForwardingL(8080, "localhost", 80);
-        session.connect();
-        System.out.println("Connected");
-        //ChannelForwardedTCPIP channel = (ChannelForwardedTCPIP) session.openChannel("direct-tcpip");
-
-
-        // Socket socket = new Socket();
-        // socket.connect(new InetSocketAddress("localhost", 8080));
-
-
-        //InputStream inputStream = new PipedInputStream();
-        //channel.setInputStream(inputStream);
-        // inputStream.transferTo(socket.getOutputStream());
-
-
-//
-//
-//        Session another = jSch.getSession("<user>", "localhost", 8080);
-//        another.setPortForwardingL(6666, "127.0.0.1", )
-//        session.connect();
-
-//        Session session = jSch.getSession("ubuntu","18.221.127.190", 22);
-//        session.setConfig("StrictHostKeyChecking", "no");
-//        session.setPortForwardingL(6666, "127.0.0.1", )
-//
-//        Session forwarding = jSch.getSession("<user>", "127.0.0.1", 8080);
-//        forwarding.setPortForwardingL()
-//
-//        session.setPortForwardingL(8080, "18.221.127.190", 22);
-//        session.connect();
-//        session.openChannel("direct-tcpip");
-//
-//        jSch.addIdentity("/Users/Riwaz/keys/ohiokey.pem");
-
-
+        PemFileCertificateSource source = new PemFileCertificateSource(
+                new File("/Users/Riwaz/cert.cer"),
+                new File("/Users/Riwaz/key.pem"),
+                "password");
+        ImpersonatingMitmManager manager = ImpersonatingMitmManager.builder()
+                .rootCertificateSource(source)
+                .trustAllServers(true)
+                .build();
+        DefaultHttpProxyServer.bootstrap().withManInTheMiddle(manager)
+                .withAddress(new InetSocketAddress("localhost", 9091))
+                .withAllowRequestToOriginServer(true)
+                .withServerResolver(new Resolver(null))
+                .start();
     }
 }
 
