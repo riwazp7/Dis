@@ -1,4 +1,4 @@
-package radio;
+package impl.radio;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import generated.grpc.radio.PeerRequest;
@@ -12,7 +12,7 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
-import vpn.impl.ProxyInstancesManager;
+import impl.aws.ProxyInstancesManager;
 
 import java.io.IOException;
 

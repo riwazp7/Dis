@@ -1,6 +1,6 @@
-package vpn.api;
+package api;
 
-import vpn.impl.LocalInstance;
+import impl.aws.LocalInstance;
 
 public interface InstanceFactory {
     LocalInstance getRandomAliveInstance();

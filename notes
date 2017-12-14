@@ -15,6 +15,6 @@ Servers to run on the instances.
 Servers need to know other instances that are alive.
 Tunnel set up on local machine.
 Tunnel set up on the servers.
-Updating, Setting up, and running servers on aws instances?
+Updating, Setting up, and running servers on impl.aws instances?
 
 **/

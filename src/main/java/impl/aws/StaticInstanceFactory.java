@@ -1,8 +1,7 @@
-package vpn.impl;
+package impl.aws;
 
-import aws.AwsManager;
 import com.amazonaws.services.ec2.model.Instance;
-import vpn.api.InstanceFactory;
+import api.InstanceFactory;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -150,7 +149,7 @@ public class StaticInstanceFactory implements InstanceFactory {
     @Override
     @Nullable
     public LocalInstance getRandomAliveInstance() {
-        // Check instance is alive (radio)
+        // Check instance is alive (impl.radio)
         // Check time
         synchronized (instancesAccessLock) {
             if (aliveInstances.isEmpty()) {

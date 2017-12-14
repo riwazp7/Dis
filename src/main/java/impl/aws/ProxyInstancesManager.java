@@ -1,7 +1,6 @@
-package vpn.impl;
+package impl.aws;
 
-import aws.AwsManager;
-import vpn.api.InstanceFactory;
+import api.InstanceFactory;
 
 import java.net.InetSocketAddress;
 import java.util.List;

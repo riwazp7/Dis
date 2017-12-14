@@ -1,4 +1,4 @@
-package aws;
+package impl.aws;
 
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;

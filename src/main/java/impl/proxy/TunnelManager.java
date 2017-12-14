@@ -1,4 +1,4 @@
-package proxy.common;
+package impl.proxy;
 
 import java.io.IOException;
 import java.util.HashMap;

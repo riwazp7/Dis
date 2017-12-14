@@ -1,4 +1,4 @@
-package radio;
+package impl.radio;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -14,6 +14,7 @@ import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -49,6 +50,7 @@ public class RadioListener {
         channel.shutdown();
     }
 
+    @Nullable
     public ListenableFuture<List<String>> requestPeers() {
         ListenableFuture<PeersResponse> response  = peersFutureStub.getPeers(PeerRequest.newBuilder().build());
         return Futures.transformAsync(response, peersResponse -> {

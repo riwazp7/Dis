@@ -1,4 +1,4 @@
-package vpn.impl;
+package impl.aws;
 
 public final class LocalInstance {
 
