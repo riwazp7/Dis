@@ -21,7 +21,7 @@ public class TunnelManager {
         tunnels.remove(toHostIp).destroy();
     }
 
-    public void stop() throws IOException {
-        TunnelUtil.killAllTunnels();
+    public void refresh() throws IOException {
+        TunnelUtil.refresh();
     }
 }

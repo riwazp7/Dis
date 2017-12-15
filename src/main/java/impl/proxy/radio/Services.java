@@ -7,9 +7,17 @@ import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
 class Services {
-     static class RefresherService extends RefresherGrpc.RefresherImplBase {
+    static class RefresherService extends RefresherGrpc.RefresherImplBase {
+
+        private final Runnable refreshRunnable;
+
+        public RefresherService(Runnable runnable) {
+            this.refreshRunnable = runnable;
+        }
+
         @Override
         public void refresh(RefreshRequest request, StreamObserver<RefreshResponse> responseObserver) {
+            refreshRunnable.run();
             responseObserver.onNext(RefreshResponse.newBuilder().build());
             responseObserver.onCompleted();
         }
@@ -47,12 +55,12 @@ class Services {
 
         @Override
         public void scheduleReMap(ReMapPath reMapPath, StreamObserver<ScheduleReMapResponse> responseObserver) {
-            reMapRequestConsumer.accept(reMapPath);
+            reMapRequestConsumer.accept(reMapPath); // Change to callable and return response
         }
 
         @Override
         public void executeReMap(ReMapRequest request, StreamObserver<ExecuteReMapResponse> responseObserver) {
-            executeReMapConsumer.accept(request);
+            executeReMapConsumer.accept(request); // Change to callable and return response
         }
     }
 
