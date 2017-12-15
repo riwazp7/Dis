@@ -34,6 +34,7 @@ public class RadioListener {
         this.channel = channel;
         this.server = ServerBuilder
                 .forPort(serverPort)
+
                 .addService(new Services.RefresherService(refreshRunnable))
                 .addService(new Services.ReMapService(pathConsumer, requestConsumer))
                 .build();
