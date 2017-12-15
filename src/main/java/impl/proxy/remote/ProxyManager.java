@@ -33,10 +33,12 @@ public class ProxyManager {
 
     public void start() throws IOException, InterruptedException {
         radioListener.startServer();
+        System.out.println("Radio listener server has been started");
         Thread.sleep(Long.MAX_VALUE);
     }
 
     private ScheduleReMapResponse handleReMap(ReMapPath reMapPath) {
+        System.out.println("Handle ReMap Received: " + reMapPath);
         try {
             if (reMapPath.getMapCount() == 0) {
                 reMapHandler.scheduleReMap(null);
@@ -48,6 +50,7 @@ public class ProxyManager {
                     return radioHq.sendReMapPath(newPath).get(10, TimeUnit.SECONDS);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    System.out.println("Next peer failed.");
                     return ScheduleReMapResponse.newBuilder().setOk(false)
                             .setFailedPeer(reMapPath.getMap(0)).build();
                 }
@@ -55,10 +58,12 @@ public class ProxyManager {
         } catch (IOException e) {
             //
         }
+        System.out.println("Self failed");
         return ScheduleReMapResponse.newBuilder().setFailedPeer("Hi").build();
     }
 
     private ExecuteReMapResponse executeReMap(ReMapRequest reMapRequest) {
+        System.out.println("Execute ReMap Received: ");
         reMapHandler.execute();
         radioHq.excuteReMap(reMapRequest);
         return ExecuteReMapResponse.newBuilder().build();

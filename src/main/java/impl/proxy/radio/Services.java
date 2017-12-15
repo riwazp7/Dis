@@ -57,12 +57,14 @@ class Services {
 
         @Override
         public void scheduleReMap(ReMapPath reMapPath, StreamObserver<ScheduleReMapResponse> responseObserver) {
+            System.out.println("Schedule Remap grpc call received");
             responseObserver.onNext(reMapRequestConsumer.apply(reMapPath)); // Change to callable and return response
             responseObserver.onCompleted();
         }
 
         @Override
         public void executeReMap(ReMapRequest request, StreamObserver<ExecuteReMapResponse> responseObserver) {
+            System.out.println("Execute Remap grpc call received");
             responseObserver.onNext(executeReMapConsumer.apply(request)); // Change to callable and return response
             responseObserver.onCompleted();
         }

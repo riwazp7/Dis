@@ -1,2 +1,6 @@
 #!/usr/bin/env bash
-nohup java -cp chaos-1.0.jar impl.StartProxy </dev/null 2>&1 | tee chaos.log &
+cd ../../_dis_jar
+cp ../Distributed/target/cchaos-1.0-jar-with-dependencies.jar .
+git add .
+git commit -m "auto.script"
+git push

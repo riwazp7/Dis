@@ -22,7 +22,8 @@ public class RadioListener {
                          Function<ReMapPath, ScheduleReMapResponse> pathConsumer,
                          Function<ReMapRequest, ExecuteReMapResponse> requestConsumer,
                          Runnable refreshRunnable) {
-        this(ManagedChannelBuilder.forAddress(host, port).build(), port, pathConsumer, requestConsumer, refreshRunnable);
+        this(ManagedChannelBuilder.forAddress(host, port).usePlaintext(true)
+                .build(), port, pathConsumer, requestConsumer, refreshRunnable);
     }
 
     private RadioListener(ManagedChannel channel,
