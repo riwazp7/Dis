@@ -30,7 +30,7 @@ public class RadioListener {
 
     private RadioListener(ManagedChannel channel, int serverPort) {
         this.channel = channel;
-        this.server = ServerBuilder.forPort(serverPort).addService(new Services.TerminatorService()).build();
+        this.server = ServerBuilder.forPort(serverPort).addService(new Services.RefresherService()).build();
         this.peersFutureStub = PeersGrpc.newFutureStub(channel);
         this.backgroundExecutor = Executors.newSingleThreadExecutor();
     }

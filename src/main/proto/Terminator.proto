@@ -3,14 +3,14 @@ syntax = "proto3";
 option java_multiple_files = true;
 package generated.grpc.radio;
 
-service Terminator {
-    rpc Terminate(TerminateRequest) returns (TerminateResponse) {}
+service Refresher {
+    rpc Refresh(RefreshRequest) returns (RefreshResponse) {}
 }
 
-message TerminateRequest {
+message RefreshRequest {
 
 }
 
-message TerminateResponse {
+message RefreshResponse {
 
 }

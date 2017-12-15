@@ -1,26 +1,16 @@
 package impl.proxy.radio;
 
-import generated.grpc.radio.ExecuteReMapResponse;
-import generated.grpc.radio.PeerRequest;
-import generated.grpc.radio.PeersGrpc;
-import generated.grpc.radio.PeersResponse;
-import generated.grpc.radio.ReMapPath;
-import generated.grpc.radio.ReMapRequest;
-import generated.grpc.radio.RemapGrpc;
-import generated.grpc.radio.ScheduleReMapResponse;
-import generated.grpc.radio.TerminateRequest;
-import generated.grpc.radio.TerminateResponse;
-import generated.grpc.radio.TerminatorGrpc;
+import generated.grpc.radio.*;
 import io.grpc.stub.StreamObserver;
 
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
 class Services {
-     static class TerminatorService extends TerminatorGrpc.TerminatorImplBase {
+     static class RefresherService extends RefresherGrpc.RefresherImplBase {
         @Override
-        public void terminate(TerminateRequest request, StreamObserver<TerminateResponse> responseObserver) {
-            responseObserver.onNext(TerminateResponse.newBuilder().build());
+        public void refresh(RefreshRequest request, StreamObserver<RefreshResponse> responseObserver) {
+            responseObserver.onNext(RefreshResponse.newBuilder().build());
             responseObserver.onCompleted();
         }
     }
