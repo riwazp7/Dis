@@ -1,5 +1,7 @@
 package impl.proxy;
 
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -12,14 +14,29 @@ public class TunnelUtil {
 
     // To be able to kill a tunnel by destroying its process, this command isn't run in background "-f" ssh option
     private static final String startTunnelCommand = "ssh -N -i %s -D %s %s";
+    private static final String bridgePortCommand = "socat tcp-listen:%s, reuseaddr, fork tcp:localhost:%s";
     private static final String killAllTunnelsCommand = "pkill ssh"; // this will interfere with the host machine...
+    private static final String killAllBridgesCommand = "pkill socat";
 
     public static Process startTunnel(int port, String host, String sshkeyFile) throws IOException {
         return executeBashCommand(String.format(startTunnelCommand, sshkeyFile, port, host).split(" "));
     }
 
+    public static Process bridgePort(int fromPort,  int toPort) throws IOException {
+        return executeBashCommand(String.format(bridgePortCommand, fromPort, toPort).split(" "));
+    }
+
     public static void killAllTunnels() throws IOException {
         executeBashCommand(killAllTunnelsCommand.split(" "));
+    }
+
+    public static void killAllBridges() throws IOException {
+        executeBashCommand(killAllBridgesCommand.split(" "));
+    }
+
+    public static void refresh() throws IOException {
+        killAllTunnels();
+        killAllBridges();
     }
 
     private static Process executeBashCommand(String[] commands) throws IOException {
