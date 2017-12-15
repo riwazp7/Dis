@@ -1,14 +1,16 @@
 package impl.proxy.radio;
 
+import generated.grpc.radio.ExecuteReMapResponse;
 import generated.grpc.radio.ReMapPath;
 import generated.grpc.radio.ReMapRequest;
+import generated.grpc.radio.ScheduleReMapResponse;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 
 import java.io.IOException;
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class RadioListener {
 
@@ -17,16 +19,16 @@ public class RadioListener {
 
     public RadioListener(String host,
                          int port,
-                         Consumer<ReMapPath> pathConsumer,
-                         Consumer<ReMapRequest> requestConsumer,
+                         Function<ReMapPath, ScheduleReMapResponse> pathConsumer,
+                         Function<ReMapRequest, ExecuteReMapResponse> requestConsumer,
                          Runnable refreshRunnable) {
         this(ManagedChannelBuilder.forAddress(host, port).build(), port, pathConsumer, requestConsumer, refreshRunnable);
     }
 
     private RadioListener(ManagedChannel channel,
                           int serverPort,
-                          Consumer<ReMapPath> pathConsumer,
-                          Consumer<ReMapRequest> requestConsumer,
+                          Function<ReMapPath, ScheduleReMapResponse> pathConsumer,
+                          Function<ReMapRequest, ExecuteReMapResponse> requestConsumer,
                           Runnable refreshRunnable) {
         this.channel = channel;
         this.server = ServerBuilder

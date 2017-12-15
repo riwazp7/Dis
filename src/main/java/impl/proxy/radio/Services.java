@@ -4,7 +4,7 @@ import generated.grpc.radio.*;
 import io.grpc.stub.StreamObserver;
 
 import java.util.concurrent.Callable;
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 class Services {
     static class RefresherService extends RefresherGrpc.RefresherImplBase {
@@ -45,22 +45,26 @@ class Services {
 
     static class ReMapService extends RemapGrpc.RemapImplBase {
 
-        private final Consumer<ReMapPath> reMapRequestConsumer;
-        private final Consumer<ReMapRequest> executeReMapConsumer;
+        private final Function<ReMapPath, ScheduleReMapResponse> reMapRequestConsumer;
+        private final Function<ReMapRequest ,ExecuteReMapResponse> executeReMapConsumer;
 
-        public ReMapService(Consumer<ReMapPath> reMapRequestConsumer, Consumer<ReMapRequest> executeReMapConsumer) {
+        public ReMapService(
+                Function<ReMapPath, ScheduleReMapResponse> reMapRequestConsumer,
+                Function<ReMapRequest, ExecuteReMapResponse> executeReMapConsumer) {
             this.reMapRequestConsumer = reMapRequestConsumer;
             this.executeReMapConsumer = executeReMapConsumer;
         }
 
         @Override
         public void scheduleReMap(ReMapPath reMapPath, StreamObserver<ScheduleReMapResponse> responseObserver) {
-            reMapRequestConsumer.accept(reMapPath); // Change to callable and return response
+            responseObserver.onNext(reMapRequestConsumer.apply(reMapPath)); // Change to callable and return response
+            responseObserver.onCompleted();
         }
 
         @Override
         public void executeReMap(ReMapRequest request, StreamObserver<ExecuteReMapResponse> responseObserver) {
-            executeReMapConsumer.accept(request); // Change to callable and return response
+            responseObserver.onNext(executeReMapConsumer.apply(request)); // Change to callable and return response
+            responseObserver.onCompleted();
         }
     }
 

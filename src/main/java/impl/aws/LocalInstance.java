@@ -1,7 +1,8 @@
 package impl.aws;
 
 import impl.proxy.radio.RadioHq;
-import jdk.internal.jline.internal.Nullable;
+
+import javax.annotation.Nullable;
 
 public final class LocalInstance {
 
@@ -17,7 +18,7 @@ public final class LocalInstance {
         this.killTimeLong = killTimeLong;
     }
 
-    public void setRadioHq(RadioHq radioHq) {
+    public void setRadioHq(@Nullable  RadioHq radioHq) {
         this.radioHq = radioHq;
     }
 
@@ -34,6 +35,7 @@ public final class LocalInstance {
         return killTimeLong;
     }
 
+    @Nullable
     public RadioHq getRadioHq() {
         return radioHq;
     }
