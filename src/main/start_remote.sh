@@ -1,2 +1,4 @@
 #!/usr/bin/env bash
-nohup java -cp chaos-1.0.jar impl.<class> </dev/null 2>&1 | tee chaos.log &
+rm -rf _dis_jar
+git clone https://github.com/riwazp7/_dis_jar.git
+nohup java -cp chaos-1.0.jar impl.StartProxy </dev/null 2>&1 | tee chaos.log &
