@@ -6,42 +6,23 @@ import generated.grpc.radio.RefreshResponse;
 import generated.grpc.radio.RefresherGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import io.grpc.Server;
-import io.grpc.ServerBuilder;
-import impl.aws.ProxyInstancesManager;
-
-import java.io.IOException;
 
 public class RadioHq {
 
     private final ManagedChannel channel;
     private final RefresherGrpc.RefresherFutureStub refresherStub;
-    private final Server server;
-    private final ProxyInstancesManager proxyInstancesManager;
 
-    public RadioHq(ProxyInstancesManager proxyInstancesManager, String host, int port) {
-        this(proxyInstancesManager, ManagedChannelBuilder.forAddress(host, port).build(), port);
+    public RadioHq(String host, int port) {
+        this(ManagedChannelBuilder.forAddress(host, port).build());
     }
 
-    private RadioHq(ProxyInstancesManager proxyInstancesManager, ManagedChannel channel, int serverPort) {
+    private RadioHq(ManagedChannel channel) {
         this.channel = channel;
         this.refresherStub = RefresherGrpc.newFutureStub(channel);
-        this.proxyInstancesManager = proxyInstancesManager;
-        this.server = ServerBuilder
-                .forPort(serverPort)
-                .addService(new Services.PeersService(
-                        () -> String.join(" ", proxyInstancesManager.getAliveProxies())))
-                .build();
     }
 
     public void shutDown() {
         channel.shutdown();
-        server.shutdown();
-    }
-
-    public void startServer() throws IOException {
-        server.start();
-        Runtime.getRuntime().addShutdownHook(new Thread(RadioHq.this::shutDown)); // remove when shutdown manually?
     }
 
     // Is this needed?

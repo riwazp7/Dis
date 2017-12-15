@@ -14,7 +14,7 @@ public class ProxyManager {
 
     private final TunnelManager tunnelManager;
     private final RadioListener radioListener;
-    private final int hqPort;
+    private final int hqPort; // where to contact server
     private final String hqAddress;
 
     public ProxyManager(String hqAddress, int hqPort) {
@@ -31,7 +31,6 @@ public class ProxyManager {
 
     private void handleReMap(ReMapPath reMapPath) {
         String[] path = reMapPath.getMapList().toArray(new String[0]);
-        if ()
     }
 
     private void executeReMap(ReMapRequest reMapRequest) {

@@ -2,6 +2,8 @@ package impl.aws;
 
 import com.amazonaws.services.ec2.model.Instance;
 import api.InstanceFactory;
+import impl.proxy.local.ClientManager;
+import impl.proxy.radio.RadioHq;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -106,6 +108,9 @@ public class StaticInstanceFactory implements InstanceFactory {
                 = new LocalInstance(instance.getInstanceId(),
                 instance.getPublicIpAddress(),
                 TimeUnit.SECONDS.toMillis(lifeSpanSecs));
+
+        //Move to constructor
+        localInstance.setRadioHq(new RadioHq(instance.getPublicIpAddress(), ClientManager.DEF_HQ_PORT));
         scheduledExecutorService.schedule(
                 this::wakeUpRandomInstance, lifeSpanSecs - DEFAULT_START_BUFFER, TimeUnit.SECONDS);
         scheduledExecutorService.schedule(
