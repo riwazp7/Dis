@@ -74,7 +74,6 @@ public class StaticInstanceFactory implements InstanceFactory {
                 }
             }
         }
-        // System.out.println("All initial instances running");
     }
 
     private void awaitSingleWakingInstance() {
@@ -101,15 +100,12 @@ public class StaticInstanceFactory implements InstanceFactory {
     }
 
     private void registerTimedLocalInstance(Instance instance) {
-        // System.out.println("Registered id: " + instance.getInstanceId());
         int lifeSpanSecs = DEFAULT_MIN_LIFESPAN_SECS + random.nextInt(DEFAULT_LIFESPAN_VARIANCE_SECS);
         LocalInstance localInstance
                 = new LocalInstance(instance.getInstanceId(),
                 instance.getPublicIpAddress(),
+                new RadioHq(instance.getPublicIpAddress(), ClientManager.DEF_HQ_PORT),
                 TimeUnit.SECONDS.toMillis(lifeSpanSecs));
-
-        //Move to constructor
-        localInstance.setRadioHq(new RadioHq(instance.getPublicIpAddress(), ClientManager.DEF_HQ_PORT));
         scheduledExecutorService.schedule(
                 this::wakeUpRandomInstance, lifeSpanSecs - DEFAULT_START_BUFFER, TimeUnit.SECONDS);
         scheduledExecutorService.schedule(
