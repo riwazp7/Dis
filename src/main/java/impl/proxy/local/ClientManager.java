@@ -15,11 +15,11 @@ public class ClientManager {
     private static final int CHANGE_PATH_SECS = 90;
     public static final int DEF_HQ_PORT = 8999;
 
-    private static final ReMapPath path1 = ReMapPath.newBuilder().addMap("18.217.100.180").build();
+    private static final ReMapPath path1 = ReMapPath.newBuilder().addMap("18.217.210.0").build();
 
     private final TunnelManager tunnelManager;
     // private final ProxyInstancesManager proxyInstancesManager;
-    private final RadioHq hq = new RadioHq("52.15.79.235", DEF_HQ_PORT);
+    private final RadioHq hq = new RadioHq("18.220.36.129", DEF_HQ_PORT);
     private final ScheduledExecutorService backgroundExecutor = Executors.newSingleThreadScheduledExecutor();
 
     public ClientManager() {
@@ -38,7 +38,7 @@ public class ClientManager {
         while (true) {
             System.out.println(hq.sendReMapPath(path1).get());
             TunnelUtil.bridgePort(6666, 8080);
-            TunnelUtil.startTunnel(8080, "52.15.79.235", "/Users/Riwaz/Keys/ohiokey.pem");
+            TunnelUtil.startTunnel(8080, "ubuntu@18.220.36.129", "~/keys/ohiokey.pem");
             hq.excuteReMap(ReMapRequest.newBuilder().build());
             Thread.sleep(10000);
         }

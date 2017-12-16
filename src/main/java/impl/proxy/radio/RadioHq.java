@@ -19,7 +19,7 @@ public class RadioHq {
     private final RemapGrpc.RemapFutureStub remapFutureStub;
 
     public RadioHq(String host, int port) {
-        this(ManagedChannelBuilder.forAddress(host, port).build());
+        this(ManagedChannelBuilder.forAddress(host, port).usePlaintext(true).build());
     }
 
     private RadioHq(ManagedChannel channel) {

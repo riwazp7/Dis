@@ -10,6 +10,7 @@ import impl.proxy.local.ClientManager;
 import impl.proxy.radio.RadioHq;
 import impl.proxy.radio.RadioListener;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -27,7 +28,7 @@ public class ProxyManager {
         this.hqAddress = hqAddress;
         this.hqPort = hqPort;
         this.tunnelManager = new TunnelManager();
-        this.radioListener = new RadioListener(hqAddress, hqPort, this::handleReMap, this::executeReMap, this::refresh);
+        this.radioListener = new RadioListener(hqPort, this::handleReMap, this::executeReMap, this::refresh);
         this.reMapHandler = new ReMapHandler();
     }
 
@@ -62,7 +63,8 @@ public class ProxyManager {
         return ScheduleReMapResponse.newBuilder().setFailedPeer("Hi").build();
     }
 
-    private ExecuteReMapResponse executeReMap(ReMapRequest reMapRequest) {
+    private ExecuteReMapResponse executeReMap(@Nullable ReMapRequest reMapRequest) {
+        if (reMapRequest == null) return ExecuteReMapResponse.newBuilder().build();
         System.out.println("Execute ReMap Received: ");
         reMapHandler.execute();
         radioHq.excuteReMap(reMapRequest);

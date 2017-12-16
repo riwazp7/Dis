@@ -1,11 +1,10 @@
 package impl.aws;
 
-import com.amazonaws.services.ec2.model.Instance;
 import api.InstanceFactory;
+import com.amazonaws.services.ec2.model.Instance;
 import impl.proxy.local.ClientManager;
 import impl.proxy.radio.RadioHq;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,34 +12,34 @@ import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
 
 /**
  * v. questionable thread safety....
  */
 public class StaticInstanceFactory implements InstanceFactory {
 
-    private static final int DEFAULT_NUM_MACHINE = 4;
-    private static final int DEFAULT_MIN_LIFESPAN_SECS = 40;
-    private static final int DEFAULT_LIFESPAN_VARIANCE_SECS = 60;
-    private static final int DEFAULT_START_BUFFER = 30;
+    private static final int DEFAULT_NUM_MACHINE = 3;
+    private static final int DEFAULT_MIN_LIFESPAN_SECS = 20;
+    private static final int DEFAULT_LIFESPAN_VARIANCE_SECS = 40;
+    private static final int DEFAULT_START_BUFFER = 20;
 
     private final Random random = new Random();
     private final Object instancesAccessLock = new Object();
-    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService scheduledExecutorService;
 
     private final List<String> wakingInstances;
     private final List<LocalInstance> aliveInstances;
     private final List<String> sleepingInstances;
-    private final List<String> filterInstances; // ?
 
     private AwsManager awsManager;
 
     public StaticInstanceFactory(AwsManager awsManager) throws RuntimeException {
         this.awsManager = awsManager;
+        this.scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         this.sleepingInstances = getAllInstances();
         this.wakingInstances = new ArrayList<>();
         this.aliveInstances = new ArrayList<>();
-        this.filterInstances = new ArrayList<>();
         init();
     }
 

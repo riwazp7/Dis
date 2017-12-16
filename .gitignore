@@ -8,3 +8,6 @@ src/main/java/generated/*
 .settings/
 chaos.iml
 .vscode
+bin/
+src/main/resources/
+src/test/
