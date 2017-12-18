@@ -9,11 +9,8 @@ Maybe not kill for some time after instance is supposed to be dead?
 
 Stuff to implement:
 
-Servers to run on the instances.
-Servers need to know other instances that are alive.
-Tunnelling ...is getting complicated.
-Tunnel setup on local machine.
-Tunnel setup on remote.
+Generate path.
+Debug setting path.
 Updating, Setting up, and running servers on aws instances?
 
 **/
