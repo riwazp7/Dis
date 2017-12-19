@@ -158,7 +158,8 @@ public class StaticInstanceFactory implements InstanceFactory {
         }
     }
 
-    private List<String> getAllInstances() {
+    @Override
+    public List<String> getAllInstances() {
         List<String> result = new ArrayList<>();
         for (Instance instance : awsManager.getAllInstanceDescription()) {
             result.add(instance.getInstanceId());
@@ -175,6 +176,7 @@ public class StaticInstanceFactory implements InstanceFactory {
     }
 
     public static void main(String[] args) {
+        // Test
         StaticInstanceFactory factory = null;
         try {
             factory = new StaticInstanceFactory(AwsManager.getAwsManager());

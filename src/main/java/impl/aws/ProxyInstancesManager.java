@@ -26,8 +26,10 @@ public class ProxyInstancesManager {
         return new InetSocketAddress(instanceFactory.getRandomAliveInstance().getIP(), 8888);
     }
 
+    // Improvements:
+    // Do not sent the IP of machines whose remaining lifespan is shorter than the lifespan to the connection.
     public List<String> getAliveProxies() {
-        return null;
+        return instanceFactory.getAllInstances();
     }
 
     public static void main(String[] args) throws Exception {
