@@ -15,13 +15,29 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
 /**
- * v. questionable thread safety....
+ * StaticInstanceFactory.java
+ * Manages starting, running for a random time, and stopping aws ec2 instances for our use.
  */
 public class StaticInstanceFactory implements InstanceFactory {
 
+    /**
+     * The number of proxies alive at a time.
+     */
     private static final int DEFAULT_NUM_MACHINE = 3;
-    private static final int DEFAULT_MIN_LIFESPAN_SECS = 20;
-    private static final int DEFAULT_LIFESPAN_VARIANCE_SECS = 40;
+
+    /**
+     * The minimum lifespan of each proxy machine.
+     */
+    private static final int DEFAULT_MIN_LIFESPAN_SECS = 120;
+
+    /**
+     * Random variance in minimum machine lifespan.
+     */
+    private static final int DEFAULT_LIFESPAN_VARIANCE_SECS = 60;
+
+    /**
+     * When to initiate starting an aws machine.
+     */
     private static final int DEFAULT_START_BUFFER = 20;
 
     private final Random random = new Random();
@@ -48,7 +64,6 @@ public class StaticInstanceFactory implements InstanceFactory {
             throw new RuntimeException("Not enough instances");
         }
         Collections.shuffle(sleepingInstances);
-        // System.out.println("shuffeled");
         for (int i = 0; i < DEFAULT_NUM_MACHINE; i++) {
             System.out.println("started 1");
             String instanceId = sleepingInstances.remove(sleepingInstances.size() - 1);
@@ -58,7 +73,6 @@ public class StaticInstanceFactory implements InstanceFactory {
         awaitAllWakingInstances();
     }
 
-    // Also check other statuses?
     private void awaitAllWakingInstances() {
         while (wakingInstances.size() > 0) {
             try {
@@ -114,7 +128,6 @@ public class StaticInstanceFactory implements InstanceFactory {
     }
 
     private void wakeUpRandomInstance() {
-        // System.out.println("Waking up a random instance");
         String instanceId;
         synchronized (instancesAccessLock) {
             Collections.shuffle(sleepingInstances);
@@ -125,7 +138,6 @@ public class StaticInstanceFactory implements InstanceFactory {
     }
 
     private void killInstance(LocalInstance localInstance) {
-        // System.out.println("Killing: " + localInstance.getInstanceId());
         awaitSingleWakingInstance();
         awsManager.stopInstance(localInstance.getInstanceId());
         synchronized (instancesAccessLock) {
@@ -139,6 +151,7 @@ public class StaticInstanceFactory implements InstanceFactory {
         // Needed setUp?
     }
 
+    @Override
     public List<LocalInstance> getAliveInstances() {
         synchronized (instancesAccessLock) {
             return Collections.unmodifiableList(aliveInstances);
@@ -158,7 +171,6 @@ public class StaticInstanceFactory implements InstanceFactory {
         }
     }
 
-    @Override
     public List<String> getAllInstances() {
         List<String> result = new ArrayList<>();
         for (Instance instance : awsManager.getAllInstanceDescription()) {

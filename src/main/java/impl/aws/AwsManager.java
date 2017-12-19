@@ -13,6 +13,10 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * AwsManager.java
+ * Handles ec2 start, stop, and description query commands through the aws api.
+ */
 public class AwsManager {
 
     private static AwsManager awsManagerInstance;

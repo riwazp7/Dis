@@ -14,7 +14,7 @@ public class TunnelManager {
     }
 
     public void setUpTunnel(int fromPort, String toHostIp) throws IOException {
-        tunnels.put(toHostIp, TunnelUtil.startTunnel(fromPort, toHostIp, keyLocation));
+        tunnels.put(toHostIp, TunnelUtil.startTunnel(fromPort, "ubuntu@" + toHostIp, keyLocation));
     }
 
     public void closeTunnel(String toHostIp) {

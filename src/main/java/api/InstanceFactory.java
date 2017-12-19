@@ -7,5 +7,5 @@ import java.util.List;
 public interface InstanceFactory {
     LocalInstance getRandomAliveInstance();
     void killAllInstances();
-    List<String> getAllInstances();
+    List<LocalInstance> getAliveInstances();
 }

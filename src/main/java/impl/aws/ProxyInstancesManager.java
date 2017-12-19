@@ -3,6 +3,7 @@ package impl.aws;
 import api.InstanceFactory;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProxyInstancesManager {
@@ -26,13 +27,18 @@ public class ProxyInstancesManager {
         return new InetSocketAddress(instanceFactory.getRandomAliveInstance().getIP(), 8888);
     }
 
-    // Improvements:
-    // Do not sent the IP of machines whose remaining lifespan is shorter than the lifespan to the connection.
     public List<String> getAliveProxies() {
-        return instanceFactory.getAllInstances();
+        List<String> res = new ArrayList<>();
+        for (LocalInstance instance : instanceFactory.getAliveInstances()) {
+            res.add(instance.getIP());
+        }
+        return res;
     }
 
     public static void main(String[] args) throws Exception {
-
+        ProxyInstancesManager manager = new ProxyInstancesManager();
+        manager.start();
+        Thread.sleep(1000);
+        manager.stop();
     }
 }
