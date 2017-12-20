@@ -1,3 +1,13 @@
+Path for code:
+Java: src/main/java/impl/
+Aws has cluster setup code.
+Proxy has VPN code for both client and server.
+Radio folder has code for gRPC communication.
+Local contains classes to run on client machines.
+Remote cotains classes to run on remote machines.
+Proto: src/main/java/proto
+Generated gRPC classes: src/main/proto
+
 To run on the client machine:
 java -cp target/dist-final-1.0-jar-with-dependencies.jar impl.proxy.local.StartClient
 
