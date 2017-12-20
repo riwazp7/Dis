@@ -60,7 +60,6 @@ public class ClientManager {
            ScheduleReMapResponse response = responseListenableFuture.get(30, TimeUnit.SECONDS);
            if (!response.getOk()) {
                System.out.println("Path setup failed in node: " + response.getFailedPeer());
-               // Request failed.
                return;
            }
             ReMapRequest req = ReMapRequest.newBuilder().setMapId(reqId).build();

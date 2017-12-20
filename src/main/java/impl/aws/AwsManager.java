@@ -33,10 +33,6 @@ public class AwsManager {
         return ec2;
     }
 
-    public String setUpInstance(String instanceId) {
-        return null;
-    }
-
     public void startInstance(String instance) {
         StartInstancesRequest request = new StartInstancesRequest().withInstanceIds(instance);
         ec2.startInstances(request);

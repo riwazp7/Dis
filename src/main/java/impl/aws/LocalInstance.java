@@ -2,6 +2,10 @@ package impl.aws;
 
 import impl.proxy.radio.RadioHq;
 
+/**
+ * A local representation of an aws instance. Has the instance's ID, current IP, time before it dies, and
+ * the gRPC client instance to talk to it.
+ */
 public final class LocalInstance {
 
     private final String instanceId;

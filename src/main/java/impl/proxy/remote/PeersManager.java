@@ -22,30 +22,30 @@ public class PeersManager {
         this.scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
     }
 
-//    public void start() throws TimeoutException {
-//        if (!updatePeerList()) {
-//            throw new TimeoutException();
-//        }
-//        scheduledExecutor.scheduleAtFixedRate(this::updatePeerList, 45, 45, TimeUnit.SECONDS);
-//    }
+    public void start() throws TimeoutException {
+        if (!updatePeerList()) {
+            throw new TimeoutException();
+        }
+        scheduledExecutor.scheduleAtFixedRate(this::updatePeerList, 45, 45, TimeUnit.SECONDS);
+    }
 
-//    private boolean updatePeerList() {
-//        Future<List<String>> peersFuture = listener.requestPeers();
-//        if (peersFuture == null) {
-//            return false;
-//        }
-//        try {
-//            List<String> newPeers = peersFuture.get(10, TimeUnit.SECONDS);
-//            synchronized (this) {
-//                peers.clear();
-//                peers.addAll(newPeers);
-//            }
-//        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-//            // Failed getting new peers. handle later.
-//            return false;
-//        }
-//        return true;
-//    }
+    private boolean updatePeerList() {
+        Future<List<String>> peersFuture = listener.requestPeers();
+        if (peersFuture == null) {
+            return false;
+        }
+        try {
+            List<String> newPeers = peersFuture.get(10, TimeUnit.SECONDS);
+            synchronized (this) {
+                peers.clear();
+                peers.addAll(newPeers);
+            }
+        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+            // Failed getting new peers. handle later.
+            return false;
+        }
+        return true;
+    }
 
     public synchronized List<String> getPeers() {
         return Collections.unmodifiableList(peers);

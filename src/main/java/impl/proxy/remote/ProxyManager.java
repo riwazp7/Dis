@@ -15,18 +15,18 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Manages the VPN service in the proxy machines.
+ * Responsible to respond to set-up path response.
+ */
 public class ProxyManager {
 
     private final TunnelManager tunnelManager;
     private final RadioListener radioListener;
-    private final int hqPort; // where to contact server
-    private final String hqAddress;
     private final ReMapHandler reMapHandler;
     private RadioHq radioHq;
 
     public ProxyManager(String hqAddress, int hqPort) {
-        this.hqAddress = hqAddress;
-        this.hqPort = hqPort;
         this.tunnelManager = new TunnelManager();
         this.radioListener = new RadioListener(hqPort, this::handleReMap, this::executeReMap, this::refresh);
         this.reMapHandler = new ReMapHandler();
@@ -39,7 +39,6 @@ public class ProxyManager {
     }
 
     private ScheduleReMapResponse handleReMap(ReMapPath reMapPath) {
-        System.out.println("Handle ReMap Received: " + reMapPath);
         try {
             if (reMapPath.getMapCount() == 0) {
                 reMapHandler.scheduleReMap(null);

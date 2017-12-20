@@ -6,6 +6,9 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A manager to start, stop, and query the static instance factory.
+ */
 public class ProxyInstancesManager {
 
     private AwsManager awsManager;

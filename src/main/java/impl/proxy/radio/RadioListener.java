@@ -1,5 +1,7 @@
 package impl.proxy.radio;
 
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import generated.grpc.radio.ExecuteReMapResponse;
 import generated.grpc.radio.ReMapPath;
 import generated.grpc.radio.ReMapRequest;
@@ -8,11 +10,16 @@ import io.grpc.Server;
 import io.grpc.ServerBuilder;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.function.Function;
 
+/**
+ * The server for incoming gRPC requests to schedule and execute remaps.
+ */
 public class RadioListener {
 
     private final Server server;
+    private List<String> peers;
 
     public RadioListener(int port,
                          Function<ReMapPath, ScheduleReMapResponse> pathConsumer,
@@ -21,7 +28,12 @@ public class RadioListener {
         this.server = ServerBuilder
                 .forPort(port)
                 .addService(new Services.ReMapService(pathConsumer, requestConsumer))
+                .addService(new Services.RefresherService(refreshRunnable))
                 .build();
+    }
+
+    public ListenableFuture<List<String>> requestPeers() {
+        return Futures.immediateFuture(peers);
     }
 
     public void startServer() throws IOException {

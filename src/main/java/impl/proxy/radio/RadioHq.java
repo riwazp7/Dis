@@ -12,6 +12,10 @@ import generated.grpc.radio.ScheduleReMapResponse;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
+/**
+ * The client to talk to gRPC servers set up on proxy machines.
+ * Has methods to send a remap, execute a remap, and refresh all tunnels in the proxies in case of an error.
+ */
 public class RadioHq {
 
     private final ManagedChannel channel;
