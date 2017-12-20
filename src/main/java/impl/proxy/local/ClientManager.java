@@ -15,6 +15,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Manages the VPN instance in a client.
+ */
 public class ClientManager {
 
     /**
@@ -29,11 +32,8 @@ public class ClientManager {
 
     public static final int DEF_HQ_PORT = 8999;
 
-    private static final String sshKeyFile = "~/keys/ohiokey.pem";
-
     private final TunnelManager tunnelManager;
     private final ProxyInstancesManager proxyInstancesManager;
-    private final RadioHq hq = new RadioHq("18.220.36.129", DEF_HQ_PORT);
     private final ScheduledExecutorService backgroundExecutor = Executors.newSingleThreadScheduledExecutor();
     private int reqId = 0;
     private boolean currA = false;
@@ -44,7 +44,7 @@ public class ClientManager {
     }
 
     public void start() throws Exception {
-        proxyInstancesManager.start();
+        // proxyInstancesManager.start();
         backgroundExecutor.scheduleAtFixedRate(this::changePath, 0, CHANGE_PATH_SECS, TimeUnit.SECONDS);
     }
 
@@ -55,6 +55,7 @@ public class ClientManager {
         ReMapPath.Builder reMapPath = ReMapPath.newBuilder();
         reMapPath.addAllMap(newPath);
         reMapPath.setReMapRequest(ReMapRequest.newBuilder().setMapId(reqId).build());
+        RadioHq hq = new RadioHq(first, DEF_HQ_PORT);
         ListenableFuture<ScheduleReMapResponse> responseListenableFuture = hq.sendReMapPath(reMapPath.build());
         try {
            ScheduleReMapResponse response = responseListenableFuture.get(30, TimeUnit.SECONDS);
@@ -66,9 +67,14 @@ public class ClientManager {
             reqId += 1;
             hq.excuteReMap(req);
             tunnelManager.setUpTunnel(8080, first);
-            if (currA)
-            TunnelUtil.bridgePort(6666, 8080);
-
+            // Flip path.
+            if (currA) {
+                TunnelUtil.bridgePort(6666, 8080);
+                currA = !currA;
+            } else {
+                TunnelUtil.bridgePort(6667, 8080);
+                currA = !currA;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

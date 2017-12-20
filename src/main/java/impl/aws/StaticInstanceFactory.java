@@ -65,7 +65,7 @@ public class StaticInstanceFactory implements InstanceFactory {
         }
         Collections.shuffle(sleepingInstances);
         for (int i = 0; i < DEFAULT_NUM_MACHINE; i++) {
-            System.out.println("started 1");
+            System.out.println("Started one EC2 instance");
             String instanceId = sleepingInstances.remove(sleepingInstances.size() - 1);
             wakeUpInstance(instanceId);
             wakingInstances.add(instanceId);
@@ -88,6 +88,7 @@ public class StaticInstanceFactory implements InstanceFactory {
                 }
             }
         }
+        System.out.println("All instances have started");
     }
 
     private void awaitSingleWakingInstance() {
@@ -107,7 +108,7 @@ public class StaticInstanceFactory implements InstanceFactory {
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
-                    //
+                    // No op.
                 }
             }
         }
