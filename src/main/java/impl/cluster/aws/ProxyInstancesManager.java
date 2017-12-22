@@ -1,6 +1,7 @@
-package impl.aws;
+package impl.cluster.aws;
 
 import api.InstanceFactory;
+import impl.cluster.LocalInstance;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;

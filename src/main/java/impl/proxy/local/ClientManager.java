@@ -1,6 +1,6 @@
 package impl.proxy.local;
 
-import impl.aws.ProxyInstancesManager;
+import impl.cluster.aws.ProxyInstancesManager;
 import impl.proxy.TunnelManager;
 
 import java.util.concurrent.Executors;

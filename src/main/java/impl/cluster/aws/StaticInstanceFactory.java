@@ -1,7 +1,8 @@
-package impl.aws;
+package impl.cluster.aws;
 
 import api.InstanceFactory;
 import com.amazonaws.services.ec2.model.Instance;
+import impl.cluster.LocalInstance;
 import impl.proxy.local.ClientManager;
 import impl.proxy.radio.RadioHq;
 
@@ -117,7 +118,7 @@ public class StaticInstanceFactory implements InstanceFactory {
     private void registerTimedLocalInstance(Instance instance) {
         int lifeSpanSecs = DEFAULT_MIN_LIFESPAN_SECS + random.nextInt(DEFAULT_LIFESPAN_VARIANCE_SECS);
         LocalInstance localInstance
-                = new LocalInstance(instance.getInstanceId(),
+                = new AwsLocalInstance(instance.getInstanceId(),
                 instance.getPublicIpAddress(),
                 new RadioHq(instance.getPublicIpAddress(), ClientManager.DEF_HQ_PORT),
                 TimeUnit.SECONDS.toMillis(lifeSpanSecs));
