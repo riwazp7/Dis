@@ -45,6 +45,7 @@ public class ClientManager {
 
     public void start() throws Exception {
         // proxyInstancesManager.start();
+
         backgroundExecutor.scheduleAtFixedRate(this::changePath, 0, CHANGE_PATH_SECS, TimeUnit.SECONDS);
     }
 
