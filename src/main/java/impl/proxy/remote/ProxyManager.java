@@ -6,21 +6,21 @@ import generated.grpc.radio.ReMapRequest;
 import generated.grpc.radio.ScheduleReMapResponse;
 import impl.proxy.ReMapHandler;
 import impl.proxy.TunnelManager;
-import impl.proxy.local.ClientManager;
 import impl.proxy.radio.RadioHq;
 import impl.proxy.radio.RadioListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Manages the VPN service in the proxy machines.
  * Responsible to respond to set-up path response.
  */
 public class ProxyManager {
+
+    private static final Logger log = LoggerFactory.getLogger(ProxyManager.class.getSimpleName());
 
     private final TunnelManager tunnelManager;
     private final RadioListener radioListener;

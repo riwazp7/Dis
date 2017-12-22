@@ -2,15 +2,19 @@ package impl.cluster.aws;
 
 import api.InstanceFactory;
 import impl.cluster.LocalInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A manager to start, stop, and query the static instance factory.
+ * A manager to start, stop, and query the aws/azure static instance factory.
  */
 public class ProxyInstancesManager {
+
+    private static final Logger log = LoggerFactory.getLogger(ProxyInstancesManager.class.getSimpleName());
 
     private AwsManager awsManager;
     private InstanceFactory instanceFactory;
@@ -25,10 +29,6 @@ public class ProxyInstancesManager {
 
     public void stop() {
        instanceFactory.killAllInstances();
-    }
-
-    public InetSocketAddress getRandomProxy() {
-        return new InetSocketAddress(instanceFactory.getRandomAliveInstance().getIP(), 8888);
     }
 
     public List<String> getAliveProxies() {

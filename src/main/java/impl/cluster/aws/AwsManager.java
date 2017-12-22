@@ -8,8 +8,9 @@ import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.StartInstancesRequest;
 import com.amazonaws.services.ec2.model.StopInstancesRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,18 +20,18 @@ import java.util.List;
  */
 public class AwsManager {
 
+    private final Logger log = LoggerFactory.getLogger(AwsManager.class.getSimpleName());
+
     private static AwsManager awsManagerInstance;
 
     public static AwsManager getAwsManager() {
             return (awsManagerInstance == null) ? (awsManagerInstance = new AwsManager()) : awsManagerInstance;
     }
 
-    private final AmazonEC2 ec2 = AmazonEC2ClientBuilder.defaultClient();
+    private final AmazonEC2 ec2;
 
-    private AwsManager() {}
-
-    public AmazonEC2 getEC2() {
-        return ec2;
+    private AwsManager() {
+        this.ec2 = AmazonEC2ClientBuilder.defaultClient();
     }
 
     public void startInstance(String instance) {
@@ -41,13 +42,6 @@ public class AwsManager {
     public void stopInstance(String instance) {
         StopInstancesRequest request = new StopInstancesRequest().withInstanceIds(instance);
         ec2.stopInstances(request);
-    }
-
-    @Nullable
-    public String getInstanceIP(String instance) {
-        return ec2.describeInstances(new DescribeInstancesRequest().withInstanceIds(instance))
-                .getReservations().get(0).getInstances().get(0)
-                .getPublicIpAddress();
     }
 
     public List<Instance> getInstanceDescription(List<String> instanceId) {
@@ -68,18 +62,8 @@ public class AwsManager {
         return instances;
     }
 
-
     public static void main(String[] args) throws Exception {
-        String instance1 = "i-000e784fdc234bf7d";
-        AwsManager manager = AwsManager.getAwsManager();
-        try {
-            manager.startInstance(instance1);
-            System.out.println("Start request sent. Waiting for 100 secs.");
-            Thread.sleep(100000);
-        } finally {
-            manager.stopInstance(instance1);
-            System.out.println("Stop request sent.");
-        }
+
     }
 }
 

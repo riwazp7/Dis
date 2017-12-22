@@ -1,9 +1,14 @@
 package impl.proxy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.annotation.Nullable;
 import java.io.IOException;
 
 public class ReMapHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(ReMapHandler.class.getSimpleName());
 
     private static final int PORT_A = 6767;
     private static final int PORT_B = 6768;

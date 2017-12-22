@@ -5,6 +5,8 @@ import com.amazonaws.services.ec2.model.Instance;
 import impl.cluster.LocalInstance;
 import impl.proxy.local.ClientManager;
 import impl.proxy.radio.RadioHq;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,6 +22,8 @@ import javax.annotation.Nullable;
  * Manages starting, running for a random time, and stopping aws ec2 instances for our use.
  */
 public class StaticInstanceFactory implements InstanceFactory {
+
+    private static final Logger log = LoggerFactory.getLogger(StaticInstanceFactory.class.getSimpleName());
 
     /**
      * The number of proxies alive at a time.
