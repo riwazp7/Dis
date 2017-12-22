@@ -8,6 +8,10 @@
     <artifactId>dist-final</artifactId>
     <version>1.0</version>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <build>
         <extensions>
             <extension>
@@ -87,7 +91,6 @@
     </dependencyManagement>
 
     <dependencies>
-
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -135,5 +138,10 @@
             <version>2.0.6.Final</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>azure</artifactId>
+            <version>1.5.1</version>
+        </dependency>
     </dependencies>
 </project>

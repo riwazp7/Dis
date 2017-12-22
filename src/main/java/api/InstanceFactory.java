@@ -1,6 +1,6 @@
 package api;
 
-import impl.aws.LocalInstance;
+import impl.cluster.LocalInstance;
 
 import java.util.List;
 

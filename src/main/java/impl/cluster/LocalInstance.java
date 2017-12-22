@@ -1,4 +1,4 @@
-package impl.aws;
+package impl.cluster;
 
 import impl.proxy.radio.RadioHq;
 
@@ -6,22 +6,33 @@ import impl.proxy.radio.RadioHq;
  * A local representation of an aws instance. Has the instance's ID, current IP, time before it dies, and
  * the gRPC client instance to talk to it.
  */
-public final class LocalInstance {
+public abstract class LocalInstance {
 
+    public enum InstanceProvider {
+        AWS, AZURE
+    }
+
+    private final InstanceProvider instanceProvider;
     private final String instanceId;
     private final String IP;
     private final long killTimeLong;
     private final RadioHq radioHq;
 
     public LocalInstance(
+            InstanceProvider instanceProvider,
             String instanceId,
             String IP,
             RadioHq radioHq,
             long killTimeLong) {
+        this.instanceProvider = instanceProvider;
         this.instanceId = instanceId;
         this.IP = IP;
         this.killTimeLong = killTimeLong;
         this.radioHq = radioHq;
+    }
+
+    public InstanceProvider getInstanceProvider() {
+        return instanceProvider;
     }
 
     public String getInstanceId() {
