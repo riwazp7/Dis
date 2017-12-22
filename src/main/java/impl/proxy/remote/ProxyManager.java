@@ -40,55 +40,20 @@ public class ProxyManager {
     }
 
     private ScheduleReMapResponse handleReMap(ReMapPath reMapPath) {
-        try {
-            if (reMapPath.getMapCount() == 0) {
-                reMapHandler.scheduleReMap(null);
-            } else {
-                radioHq = new RadioHq(reMapPath.getMap(0), ClientManager.DEF_HQ_PORT);
-                List<String> it = reMapPath.getMapList().subList(1, reMapPath.getMapList().size());
-                ReMapPath newPath = ReMapPath.newBuilder().addAllMap(it).build();
-                try {
-                    // Send a remap request to remaining machines down the chain and wait upto 20 secs to receive an OK.
-                    return radioHq.sendReMapPath(newPath).get(20, TimeUnit.SECONDS);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("Next peer failed.");
-                    // Otherwise the next peer in the list is the one that failed.
-                    return ScheduleReMapResponse.newBuilder().setOk(false)
-                            .setFailedPeer(reMapPath.getMap(0)).build();
-                }
-            }
-        } catch (IOException e) {
-            // This peer failed.
-        }
-        // This proxy failed. Send IP of this proxy as response.
-        return ScheduleReMapResponse.newBuilder()
-                .setOk(false)
-                .setFailedPeer(InetAddress.getLoopbackAddress()
-                        .getHostAddress())
-                .build();
+        return null;
     }
 
     /**
      * Actually execute a ReMap request that was received.
      */
     private ExecuteReMapResponse executeReMap(@Nullable ReMapRequest reMapRequest) {
-        if (reMapRequest == null) return ExecuteReMapResponse.newBuilder().build();
-        System.out.println("Execute ReMap Received: ");
-        reMapHandler.execute();
-        radioHq.excuteReMap(reMapRequest);
-        return ExecuteReMapResponse.newBuilder().build();
+       return null;
     }
 
     /**
      * Refresh all tunnels to clear possible tunnels existing as daemons.
      */
     private void refresh() {
-        try {
-            tunnelManager.refresh();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
 }
