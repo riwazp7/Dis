@@ -46,14 +46,26 @@ public class ProxyManager {
     /**
      * Actually execute a ReMap request that was received.
      */
-    private ExecuteReMapResponse executeReMap(@Nullable ReMapRequest reMapRequest) {
-       return null;
+    @Nullable
+    private ExecuteReMapResponse executeReMap(@Nullable  ReMapRequest reMapRequest) {
+        if (reMapRequest == null) {
+            log.error("Received null ReMapRequest to execute.");
+            return null;
+        }
+        log.info("Received ReMapRequest: ", reMapRequest.getMapId());
+        return null;
     }
 
     /**
      * Refresh all tunnels to clear possible tunnels existing as daemons.
      */
     private void refresh() {
+        try {
+
+            tunnelManager.refresh();
+        } catch (IOException e) {
+            log.error("Refresh failed with exception", e);
+        }
     }
 
 }

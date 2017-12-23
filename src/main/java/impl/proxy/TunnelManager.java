@@ -31,5 +31,6 @@ public class TunnelManager {
 
     public void refresh() throws IOException {
         TunnelUtil.refresh();
+        tunnels.clear();
     }
 }
