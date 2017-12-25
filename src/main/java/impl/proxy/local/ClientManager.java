@@ -1,6 +1,8 @@
 package impl.proxy.local;
 
+import generated.grpc.radio.ReMapPath;
 import impl.proxy.TunnelManager;
+import impl.proxy.radio.RadioHq;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,4 +46,13 @@ public class ClientManager {
     private void changePath() {
 
     }
+
+    public static void main(String[] args) throws Exception {
+
+        RadioHq hq = new RadioHq("52.224.223.144", DEF_HQ_PORT);
+        ReMapPath reMapPath = ReMapPath.newBuilder().build();
+        System.out.println(hq.sendReMapPath(reMapPath).get());
+
+    }
+
 }

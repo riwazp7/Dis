@@ -25,9 +25,8 @@ public class ProxyManager {
     private final TunnelManager tunnelManager;
     private final RadioListener radioListener;
     private final ReMapHandler reMapHandler;
-    private RadioHq radioHq;
 
-    public ProxyManager(String hqAddress, int hqPort) {
+    public ProxyManager(int hqPort) {
         this.tunnelManager = new TunnelManager();
         this.radioListener = new RadioListener(hqPort, this::handleReMap, this::executeReMap, this::refresh);
         this.reMapHandler = new ReMapHandler();
@@ -40,6 +39,7 @@ public class ProxyManager {
     }
 
     private ScheduleReMapResponse handleReMap(ReMapPath reMapPath) {
+        System.out.println("Received RemapPath: " + reMapPath.toString());
         return null;
     }
 
@@ -68,4 +68,8 @@ public class ProxyManager {
         }
     }
 
+    public static void main(String[] args) throws Exception {
+        ProxyManager proxyManager = new ProxyManager(8888);
+        proxyManager.start();
+    }
 }

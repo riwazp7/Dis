@@ -19,7 +19,7 @@ public class StartProxy {
         if (args.length > 0) {
             HQ_IP = args[0];
         }
-        new ProxyManager(HQ_IP, ClientManager.DEF_HQ_PORT).start();
+        new ProxyManager(ClientManager.DEF_HQ_PORT).start();
         log.info("Started Proxy for HQ_IP %s", HQ_IP);
     }
 }
