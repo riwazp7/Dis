@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.riwazpoudyal</groupId>
-    <artifactId>dist-final</artifactId>
+    <artifactId>chaos</artifactId>
     <version>1.0</version>
 
     <build>

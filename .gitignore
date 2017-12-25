@@ -1,4 +1,5 @@
 .idea/*
+dist-final.iml
 Distributed.iml
 target/*
 bin/*
@@ -6,7 +7,6 @@ src/main/java/generated/*
 .classpath
 .project
 .settings/
-chaos.iml
 .vscode
 bin/
 src/main/resources/
