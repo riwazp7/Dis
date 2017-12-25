@@ -23,7 +23,6 @@ public class TunnelUtil {
 
     public static Process bridgePort(int fromPort,  int toPort) throws IOException {
         //return executeBashCommand(String.format(bridgePortCommand, fromPort, toPort).split(" "));
-
         Runtime.getRuntime().exec(String.format(bridgePortCommand, fromPort, toPort));
         return null;
 

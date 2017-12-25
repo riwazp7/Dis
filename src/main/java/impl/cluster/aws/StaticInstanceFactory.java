@@ -1,9 +1,12 @@
-package impl.aws;
+package impl.cluster.aws;
 
 import api.InstanceFactory;
 import com.amazonaws.services.ec2.model.Instance;
+import impl.cluster.LocalInstance;
 import impl.proxy.local.ClientManager;
 import impl.proxy.radio.RadioHq;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,6 +22,8 @@ import javax.annotation.Nullable;
  * Manages starting, running for a random time, and stopping aws ec2 instances for our use.
  */
 public class StaticInstanceFactory implements InstanceFactory {
+
+    private static final Logger log = LoggerFactory.getLogger(StaticInstanceFactory.class.getSimpleName());
 
     /**
      * The number of proxies alive at a time.
@@ -117,7 +122,7 @@ public class StaticInstanceFactory implements InstanceFactory {
     private void registerTimedLocalInstance(Instance instance) {
         int lifeSpanSecs = DEFAULT_MIN_LIFESPAN_SECS + random.nextInt(DEFAULT_LIFESPAN_VARIANCE_SECS);
         LocalInstance localInstance
-                = new LocalInstance(instance.getInstanceId(),
+                = new AwsLocalInstance(instance.getInstanceId(),
                 instance.getPublicIpAddress(),
                 new RadioHq(instance.getPublicIpAddress(), ClientManager.DEF_HQ_PORT),
                 TimeUnit.SECONDS.toMillis(lifeSpanSecs));

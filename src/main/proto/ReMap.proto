@@ -25,7 +25,7 @@ message ScheduleReMapResponse {
 
 // Similar to Schedule response for now but will change
 message ExecuteReMapResponse {
-    ReMapRequest reMapRequest = 1;
-    bool ok = 2;
-    string failedPeer = 3;
+    bool ok = 1;
+    string failedPeer = 2;
+    string failureInfo = 3;
 }

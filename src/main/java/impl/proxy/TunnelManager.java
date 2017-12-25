@@ -1,5 +1,8 @@
 package impl.proxy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -7,6 +10,8 @@ import java.util.HashMap;
  * Handles SOCKS5 tunnel starting and stopping information.
  */
 public class TunnelManager {
+
+    private static final Logger log = LoggerFactory.getLogger(TunnelManager.class.getSimpleName());
 
     private static final String keyLocation = "keys/ohiokey.pem";
 
@@ -26,5 +31,6 @@ public class TunnelManager {
 
     public void refresh() throws IOException {
         TunnelUtil.refresh();
+        tunnels.clear();
     }
 }

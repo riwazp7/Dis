@@ -6,21 +6,21 @@ import generated.grpc.radio.ReMapRequest;
 import generated.grpc.radio.ScheduleReMapResponse;
 import impl.proxy.ReMapHandler;
 import impl.proxy.TunnelManager;
-import impl.proxy.local.ClientManager;
 import impl.proxy.radio.RadioHq;
 import impl.proxy.radio.RadioListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Manages the VPN service in the proxy machines.
  * Responsible to respond to set-up path response.
  */
 public class ProxyManager {
+
+    private static final Logger log = LoggerFactory.getLogger(ProxyManager.class.getSimpleName());
 
     private final TunnelManager tunnelManager;
     private final RadioListener radioListener;
@@ -40,44 +40,20 @@ public class ProxyManager {
     }
 
     private ScheduleReMapResponse handleReMap(ReMapPath reMapPath) {
-        try {
-            if (reMapPath.getMapCount() == 0) {
-                reMapHandler.scheduleReMap(null);
-            } else {
-                radioHq = new RadioHq(reMapPath.getMap(0), ClientManager.DEF_HQ_PORT);
-                List<String> it = reMapPath.getMapList().subList(1, reMapPath.getMapList().size());
-                ReMapPath newPath = ReMapPath.newBuilder().addAllMap(it).build();
-                try {
-                    // Send a remap request to remaining machines down the chain and wait upto 20 secs to receive an OK.
-                    return radioHq.sendReMapPath(newPath).get(20, TimeUnit.SECONDS);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("Next peer failed.");
-                    // Otherwise the next peer in the list is the one that failed.
-                    return ScheduleReMapResponse.newBuilder().setOk(false)
-                            .setFailedPeer(reMapPath.getMap(0)).build();
-                }
-            }
-        } catch (IOException e) {
-            // This peer failed.
-        }
-        // This proxy failed. Send IP of this proxy as response.
-        return ScheduleReMapResponse.newBuilder()
-                .setOk(false)
-                .setFailedPeer(InetAddress.getLoopbackAddress()
-                        .getHostAddress())
-                .build();
+        return null;
     }
 
     /**
      * Actually execute a ReMap request that was received.
      */
-    private ExecuteReMapResponse executeReMap(@Nullable ReMapRequest reMapRequest) {
-        if (reMapRequest == null) return ExecuteReMapResponse.newBuilder().build();
-        System.out.println("Execute ReMap Received: ");
-        reMapHandler.execute();
-        radioHq.excuteReMap(reMapRequest);
-        return ExecuteReMapResponse.newBuilder().build();
+    @Nullable
+    private ExecuteReMapResponse executeReMap(@Nullable  ReMapRequest reMapRequest) {
+        if (reMapRequest == null) {
+            log.error("Received null ReMapRequest to execute.");
+            return null;
+        }
+        log.info("Received ReMapRequest: ", reMapRequest.getMapId());
+        return null;
     }
 
     /**
@@ -85,9 +61,10 @@ public class ProxyManager {
      */
     private void refresh() {
         try {
+
             tunnelManager.refresh();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Refresh failed with exception", e);
         }
     }
 
