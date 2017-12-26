@@ -9,7 +9,7 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 
 public class Properties {
 
-    private static final String PROPERTIES_FILE_DIR = "dist.properties";
+    private static final String PROPERTIES_FILE_DIR = "./dist.properties";
 
     private static Properties instance = null;
 

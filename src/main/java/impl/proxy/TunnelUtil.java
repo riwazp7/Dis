@@ -14,7 +14,7 @@ public class TunnelUtil {
     // To be able to kill a tunnel by destroying its process, this command isn't run in background "-f" ssh option
     private static final String startTunnelCommand = "ssh -N -i %s -D %s %s";
     private static final String bridgePortCommand = "socat tcp-listen:%s reuseaddr fork tcp:localhost:%s";
-    private static final String killAllTunnelsCommand = "pkill ssh"; // this will interfere with the host machine...
+    private static final String killAllTunnelsCommand = "pkill ssh"; // ...this will interfere with the host machine...
     private static final String killAllBridgesCommand = "pkill socat";
 
     public static Process startTunnel(int port, String host, String sshkeyFile) throws IOException {

@@ -22,11 +22,6 @@ public class ClientManager {
      */
     private static final int CHANGE_PATH_SECS = 90;
 
-    /**
-     * Default path length
-     */
-    private static final int DEF_PATH_LEN = 2;
-
     public static final int DEF_HQ_PORT = 8999;
 
     private final TunnelManager tunnelManager;

@@ -1,6 +1,5 @@
 .idea/*
-dist-final.iml
-Distributed.iml
+chaos.iml
 target/*
 bin/*
 src/main/java/generated/*
